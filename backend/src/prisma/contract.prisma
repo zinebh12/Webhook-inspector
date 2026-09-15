@@ -1,0 +1,49 @@
+// use prisma-8
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    endpoints WebhookEndpoint[]
+}
+
+model WebhookEndpoint {
+    id        String   @id @default(cuid())
+    name      String?
+    url       String   @unique
+    createdAt DateTime @default(now())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    requests WebhookRequest[]
+
+    @@index([userId])
+}
+
+model WebhookRequest {
+    id         String   @id @default(cuid())
+    method     String
+    headers    Json     @db.JsonB
+    body       Json?    @db.JsonB
+    query      Json?    @db.JsonB
+    statusCode Int?
+    receivedAt DateTime @default(now())
+
+    endpointId String
+    endpoint   WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+    @@index([endpointId])
+    @@index([receivedAt])
+}
