@@ -1,7 +1,7 @@
 import { registerSchemma, loginSchema } from '../schemas/authSchema';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
 import type { authRequest } from '../types/auth';
 export const registerAuth = async (req: authRequest, res: Response) => {
@@ -66,8 +66,7 @@ export const loginAuth = async (req: authRequest, res: Response) => {
     });
     res.cookie('token', token, {
       httpOnly: true,
-      // secure: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -99,11 +98,10 @@ export const getCurrentUser = async (req: authRequest, res: Response) => {
   }
 };
 
-export const logout = (res: Response) => {
+export const logout = (req: Request, res: Response) => {
   res.clearCookie('token', {
     httpOnly: true,
-    // secure: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'lax',
     path: '/',
   });
