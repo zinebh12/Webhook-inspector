@@ -51,7 +51,7 @@ export const loginAuth = async (req: authRequest, res: Response) => {
     }
     const { email, password } = validatedData.data;
     const user = await db.orm.public.User.where({ email }).first();
-    if (!user ) {
+    if (!user) {
       return res.status(401).json({
         error: 'Invalid email or password',
       });
@@ -79,4 +79,33 @@ export const loginAuth = async (req: authRequest, res: Response) => {
     console.error(error);
     return res.status(500).json({ error: 'Failed to login' });
   }
+};
+
+export const getCurrentUser = async (req: authRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const user = await db.orm.public.User.where({ id: req.userId }).first();
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+    return res.json({ id: user.id, email: user.email });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Failed to get current user' });
+  }
+};
+
+export const logout = (res: Response) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+  });
+  return res.json({
+    message: 'Log out successful!',
+  });
 };
