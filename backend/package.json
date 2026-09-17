@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma skills sync || exit 0",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit",
+    "dev": "tsx watch src/server/server.ts"
   },
   "keywords": [],
   "type": "commonjs",
@@ -39,6 +40,7 @@
     "prettier": "^3.9.6",
     "prisma": "^8.0.0-rc.15",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0"
   }
