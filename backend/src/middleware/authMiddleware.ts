@@ -13,7 +13,7 @@ export const authMiddleware = (request: authRequest, response: Response, next: N
       response.status(401).json({ error: 'Not authenticated' });
     }
     const decode = jwt.verify(token, JWT_SECRET) as {
-      userId: number;
+      userId: string;
     };
     request.userId = decode.userId;
     next();
