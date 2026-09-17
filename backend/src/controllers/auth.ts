@@ -56,7 +56,7 @@ export const loginAuth = async (req: authRequest, res: Response) => {
         error: 'Invalid email or password',
       });
     }
-    const passwordMatches = await argon2.verify(password, user?.password);
+    const passwordMatches = await argon2.verify(user?.password, password);
     if (!passwordMatches) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
