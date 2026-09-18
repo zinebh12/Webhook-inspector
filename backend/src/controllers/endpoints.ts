@@ -53,3 +53,32 @@ export const getEndpoints = async (req: authRequest, res: Response) => {
     return res.status(500).json({ error: 'Error fetching Endpoints' });
   }
 };
+
+export const getSingleEndpoint = async (req: authRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    const id = req.params.id.toString();
+    if (!id) {
+      return res.status(400).json({
+        error: 'Invalid application ID',
+      });
+    }
+    const endpoint = await db.orm.public.WebhookEndpoint.where({
+      id: id,
+      userId: req.userId,
+    }).first();
+    if (!endpoint) {
+      return res.status(404).json({
+        error: 'Endpoint not found',
+      });
+    }
+    return res.status(201).json(endpoint);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Failed to fetch endpoint',
+    });
+  }
+};
