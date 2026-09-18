@@ -30,7 +30,7 @@ export const createEndpoint = async (req: authRequest, res: Response) => {
       url: slug,
       userId: userId,
     });
-    return res.status(201).json({
+    return res.status(200).json({
       endpoint,
       fullUrl: buildWebhookUrl(endpoint.url),
     });
@@ -47,7 +47,7 @@ export const getEndpoints = async (req: authRequest, res: Response) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     const endpoint = await db.orm.public.WebhookEndpoint.where({ userId }).all();
-    return res.status(201).json(endpoint);
+    return res.status(200).json(endpoint);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error fetching Endpoints' });
@@ -59,10 +59,11 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    const id = req.params.id.toString();
-    if (!id) {
+    const id = req.params.id;
+
+    if (!id || typeof id !== 'string') {
       return res.status(400).json({
-        error: 'Invalid application ID',
+        error: 'Invalid endpoint ID',
       });
     }
     const endpoint = await db.orm.public.WebhookEndpoint.where({
@@ -74,7 +75,7 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
         error: 'Endpoint not found',
       });
     }
-    return res.status(201).json(endpoint);
+    return res.status(200).json(endpoint);
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -89,6 +90,7 @@ export const toggleEndpointActivity = async (req: authRequest, res: Response) =>
       return res.status(401).json({ error: 'Not authenticated' });
     }
     const validatedData = updateEndpointSchema.safeParse(req.body);
+
     if (!validatedData.success) {
       return res.status(400).json({
         error: 'Validation failed',
@@ -96,21 +98,29 @@ export const toggleEndpointActivity = async (req: authRequest, res: Response) =>
       });
     }
     const { isActive } = validatedData.data;
-    const id = req.params.id.toString();
+    const id = req.params.id;
     const userId = req.userId;
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid endpoint ID',
+      });
+    }
+
     const toggleIsActive = await db.orm.public.WebhookEndpoint.where({
       id: id,
       userId: userId,
     }).update({
       isActive: isActive,
     });
-    if (toggleIsActive) {
+
+    if (!toggleIsActive) {
       return res.status(404).json({
-        error: 'Application not found',
+        error: 'Endpoint not found',
       });
     }
 
-    return res.status(201).json(toggleIsActive);
+    return res.status(200).json(toggleIsActive);
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -124,21 +134,29 @@ export const deleteEndpoint = async (req: authRequest, res: Response) => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    const id = req.params.id.toString();
+    const id = req.params.id;
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid endpoint ID',
+      });
+    }
+
     const deleteEndpoint = await db.orm.public.WebhookEndpoint.where({
       id: id,
       userId: req.userId,
     }).delete();
+
     if (!deleteEndpoint) {
       return res.status(404).json({
-        error: 'Application not found',
+        error: 'Endpoint not found',
       });
     }
-    return res.status(201).json(deleteEndpoint);
+    return res.status(204).json(deleteEndpoint);
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      error: 'Failed to delete application',
+      error: 'Failed to delete Endpoint',
     });
   }
 };

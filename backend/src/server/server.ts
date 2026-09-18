@@ -11,7 +11,7 @@ const port = 3000;
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRoute);
-app.use('/api/endpoint', endpointRoutes);
+app.use('/api/endpoints', endpointRoutes);
 
 //health check!
 app.get('/api/health', (req: Request, res: Response) => {
