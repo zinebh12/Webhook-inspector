@@ -118,3 +118,27 @@ export const toggleEndpointActivity = async (req: authRequest, res: Response) =>
     });
   }
 };
+
+export const deleteEndpoint = async (req: authRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    const id = req.params.id.toString();
+    const deleteEndpoint = await db.orm.public.WebhookEndpoint.where({
+      id: id,
+      userId: req.userId,
+    }).delete();
+    if (!deleteEndpoint) {
+      return res.status(404).json({
+        error: 'Application not found',
+      });
+    }
+    return res.status(201).json(deleteEndpoint);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Failed to delete application',
+    });
+  }
+};
