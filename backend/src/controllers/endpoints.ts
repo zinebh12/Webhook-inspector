@@ -6,7 +6,7 @@
 import type { Response } from 'express';
 import type { authRequest } from '../types/auth';
 import { db } from '../prisma/db';
-import { createEndpointSchema } from '../schemas/endpointsSchema';
+import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpointsSchema';
 import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug';
 export const createEndpoint = async (req: authRequest, res: Response) => {
   try {
@@ -79,6 +79,42 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
     console.error(error);
     res.status(500).json({
       error: 'Failed to fetch endpoint',
+    });
+  }
+};
+
+export const toggleEndpointActivity = async (req: authRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    const validatedData = updateEndpointSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: validatedData.error.issues,
+      });
+    }
+    const { isActive } = validatedData.data;
+    const id = req.params.id.toString();
+    const userId = req.userId;
+    const toggleIsActive = await db.orm.public.WebhookEndpoint.where({
+      id: id,
+      userId: userId,
+    }).update({
+      isActive: isActive,
+    });
+    if (toggleIsActive) {
+      return res.status(404).json({
+        error: 'Application not found',
+      });
+    }
+
+    return res.status(201).json(toggleIsActive);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Failed to update endpoint',
     });
   }
 };
