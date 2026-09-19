@@ -1,0 +1,44 @@
+[
+  {
+    "id": "column.public.webhookRequest.ip",
+    "label": "Add column \"ip\" to \"webhookRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "ip",
+        "table": "webhookRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"ip\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "webhookRequest",
+          "ip"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"ip\"",
+        "sql": "ALTER TABLE \"public\".\"webhookRequest\" ADD COLUMN \"ip\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"ip\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "webhookRequest",
+          "ip"
+        ]
+      }
+    ]
+  }
+]

@@ -32,6 +32,7 @@ model WebhookRequest {
     headers    Json
     body       Json?
     query      Json?
+    ip         String?
     statusCode Int?
     receivedAt DateTime @default(now())
 

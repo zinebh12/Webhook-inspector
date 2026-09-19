@@ -231,6 +231,13 @@
                   "kind": "scalar"
                 }
               },
+              "ip": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "method": {
                 "nullable": false,
                 "type": {
@@ -291,6 +298,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "ip": {
+                  "column": "ip"
                 },
                 "method": {
                   "column": "method"
@@ -474,6 +484,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "ip": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "method": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -549,7 +564,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "dee2f07e302f394ef2f1298c3d6374359b08ba3e9182421986c87145fe9898d4"
+    "storageHash": "9df7215ba31c1938c791e13f9edd178cbc129815765053b0a45e8f18c5005e3d"
   },
   "execution": {
     "executionHash": "7b5ec982b98c22122bab5a62a6941f8b96dce686cfb38ffba9d5e5f115d10d1d",
