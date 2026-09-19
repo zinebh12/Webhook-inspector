@@ -3,9 +3,9 @@ import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
 
 export const createRequest = async (req: Request, res: Response) => {
-  try {    
+  try {
     const slug = req.params.slug;
-    
+
     if (!slug || typeof slug !== 'string') {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
@@ -34,5 +34,42 @@ export const createRequest = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Something went wrong' });
+  }
+};
+
+export const getRequests = async (req: authRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'Authentication error',
+      });
+    }
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid endpoint ID',
+      });
+    }
+
+    const endpoint = await db.orm.public.WebhookEndpoint.where({
+      id: id,
+      userId,
+    }).first();
+
+    if (!endpoint) {
+      return res.status(404).json({ error: 'No endpoint found.' });
+    }
+
+    const endpointRequests = await db.orm.public.WebhookRequest.where({
+      endpointId: endpoint?.id,
+    }).all();
+
+    return res.status(200).json(endpointRequests);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error getting requests' });
   }
 };
