@@ -42,20 +42,18 @@ export const getRequests = async (req: authRequest, res: Response) => {
     const id = req.params.id;
     const userId = req.userId;
 
-    if (!userId) {
-      return res.status(401).json({
-        error: 'Authentication error',
-      });
-    }
-
     if (!id || typeof id !== 'string') {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
       });
     }
 
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
     const endpoint = await db.orm.public.WebhookEndpoint.where({
-      id: id,
+      id,
       userId,
     }).first();
 
@@ -64,12 +62,41 @@ export const getRequests = async (req: authRequest, res: Response) => {
     }
 
     const endpointRequests = await db.orm.public.WebhookRequest.where({
-      endpointId: endpoint?.id,
+      endpointId: endpoint.id,
     }).all();
 
     return res.status(200).json(endpointRequests);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error getting requests' });
+  }
+};
+
+export const getSingleRequest = async (req: authRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid endpoint ID',
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const webhookRequest = await db.orm.public.WebhookRequest.where({ id })
+      .include('endpoint')
+      .first();
+    if (!webhookRequest || webhookRequest.endpoint.userId !== req.userId) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    return res.status(200).json(webhookRequest);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error getting request' });
   }
 };
