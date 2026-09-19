@@ -1,8 +1,3 @@
-// POST   /endpoints               → create a new WebhookEndpoint (generates unique `url`)
-// GET    /endpoints               → list all endpoints for logged-in user
-// GET    /endpoints/:id           → get one endpoint's details
-// PATCH  /endpoints/:id           → update name
-// DELETE /endpoints/:id           → delete endpoint (cascades to its requests)
 import type { Response } from 'express';
 import type { authRequest } from '../types/auth';
 import { db } from '../prisma/db';
