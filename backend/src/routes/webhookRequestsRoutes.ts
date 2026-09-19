@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import { createRequest } from '../controllers/webhookRequests';
+import { getSingleRequest, deleteRequest } from '../controllers/webhookRequests';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.post('/:slug', createRequest);
+router.use(authMiddleware);
+
+router.get('/:id', getSingleRequest);
+router.delete('/:id', deleteRequest);
 
 export default router;

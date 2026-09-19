@@ -6,6 +6,7 @@ import {
   deleteEndpoint,
   toggleEndpointActivity,
 } from '../controllers/endpoints';
+import { getRequests, clearRequests } from '../controllers/webhookRequests';
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -17,5 +18,7 @@ router.get('/:id', getSingleEndpoint);
 router.post('/', createEndpoint);
 router.delete('/:id', deleteEndpoint);
 router.patch('/:id', toggleEndpointActivity);
+router.get('/:id/requests', getRequests);
+router.delete('/:id/requests', clearRequests);
 
 export default router;
