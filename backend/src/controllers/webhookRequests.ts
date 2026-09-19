@@ -90,6 +90,7 @@ export const getSingleRequest = async (req: authRequest, res: Response) => {
     const webhookRequest = await db.orm.public.WebhookRequest.where({ id })
       .include('endpoint')
       .first();
+
     if (!webhookRequest || webhookRequest.endpoint.userId !== req.userId) {
       return res.status(404).json({ error: 'Request not found.' });
     }
@@ -98,5 +99,39 @@ export const getSingleRequest = async (req: authRequest, res: Response) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error getting request' });
+  }
+};
+
+export const deleteRequest = async (req: authRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid endpoint ID',
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const webhookRequest = await db.orm.public.WebhookRequest.where({ id })
+      .include('endpoint')
+      .first();
+
+    if (!webhookRequest || webhookRequest.endpoint.userId !== req.userId) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+    
+    await db.orm.public.WebhookRequest.where({ id }).delete();
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Failed to delete Request',
+    });
   }
 };
