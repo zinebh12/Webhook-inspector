@@ -61,9 +61,17 @@ export const getRequests = async (req: authRequest, res: Response) => {
       return res.status(404).json({ error: 'No endpoint found.' });
     }
 
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.max(1, Number(req.query.limit) || 20);
+    const offset = (page - 1) * limit;
+
     const endpointRequests = await db.orm.public.WebhookRequest.where({
       endpointId: endpoint.id,
-    }).all();
+    })
+      .orderBy((r) => r.receivedAt.desc())
+      .limit(limit)
+      .offset(offset)
+      .all();
 
     return res.status(200).json(endpointRequests);
   } catch (error) {
