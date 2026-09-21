@@ -1,6 +1,7 @@
 import type { authRequest } from '../types/auth';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
+import { requestQuerySchema } from '../schemas/requestsSchema';
 
 export const createRequest = async (req: Request, res: Response) => {
   try {
@@ -39,6 +40,13 @@ export const createRequest = async (req: Request, res: Response) => {
 
 export const getRequests = async (req: authRequest, res: Response) => {
   try {
+    const validatedQuery = requestQuerySchema.safeParse(req.query);
+    if (!validatedQuery.success) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: validatedQuery.error.issues,
+      });
+    }
     const id = req.params.id;
     const userId = req.userId;
 
@@ -47,6 +55,7 @@ export const getRequests = async (req: authRequest, res: Response) => {
         error: 'Invalid endpoint ID',
       });
     }
+    const { method, search, page, limit, from, to } = validatedQuery.data;
 
     if (!userId) {
       return res.status(401).json({ error: 'Not authenticated' });
@@ -61,25 +70,69 @@ export const getRequests = async (req: authRequest, res: Response) => {
       return res.status(404).json({ error: 'No endpoint found.' });
     }
 
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.max(1, Number(req.query.limit) || 20);
     const offset = (page - 1) * limit;
 
-    const whereConditions: { endpointId: string; method?: string } = {
+    const whereConditions: {
+      endpointId: string;
+      method?: string;
+      receivedAt?: { gte?: Date; lte?: Date };
+    } = {
       endpointId: endpoint.id,
     };
-    const method = req.query.method;
+
     if (typeof method === 'string' && method.length > 0) {
       whereConditions.method = method;
     }
 
-    const endpointRequests = await db.orm.public.WebhookRequest.where(whereConditions)
-      .orderBy((r) => r.receivedAt.desc())
-      .limit(limit)
-      .offset(offset)
-      .all();
+    const receivedAt: { gte?: Date; lte?: Date } = {};
 
-    return res.status(200).json(endpointRequests);
+    if (from) {
+      receivedAt.gte = from;
+    }
+
+    if (to) {
+      receivedAt.lte = to;
+    }
+
+    if (Object.keys(receivedAt).length > 0) {
+      whereConditions.receivedAt = receivedAt;
+    }
+
+    const hasSearch = typeof search === 'string' && search.length > 0;
+
+    let endpointRequests;
+    let total: number;
+
+    if (hasSearch) {
+      const allMatches = await db.orm.public.WebhookRequest.where(whereConditions)
+        .orderBy((r) => r.receivedAt.desc())
+        .all();
+
+      const filtered = allMatches.filter((r) =>
+        JSON.stringify(r.body).toLowerCase().includes(search.toLowerCase()),
+      );
+
+      total = filtered.length;
+      endpointRequests = filtered.slice(offset, offset + limit);
+    } else {
+      endpointRequests = await db.orm.public.WebhookRequest.where(whereConditions)
+        .orderBy((r) => r.receivedAt.desc())
+        .limit(limit)
+        .offset(offset)
+        .all();
+
+      total = (await db.orm.public.WebhookRequest.where(whereConditions).all()).length;
+    }
+
+    const totalPages = Math.ceil(total / limit);
+
+    return res.status(200).json({
+      data: endpointRequests,
+      page,
+      total,
+      limit,
+      totalPages,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error getting requests' });
