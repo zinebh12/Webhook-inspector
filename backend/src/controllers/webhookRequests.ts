@@ -65,9 +65,15 @@ export const getRequests = async (req: authRequest, res: Response) => {
     const limit = Math.max(1, Number(req.query.limit) || 20);
     const offset = (page - 1) * limit;
 
-    const endpointRequests = await db.orm.public.WebhookRequest.where({
+    const whereConditions: { endpointId: string; method?: string } = {
       endpointId: endpoint.id,
-    })
+    };
+    const method = req.query.method;
+    if (typeof method === 'string' && method.length > 0) {
+      whereConditions.method = method;
+    }
+
+    const endpointRequests = await db.orm.public.WebhookRequest.where(whereConditions)
       .orderBy((r) => r.receivedAt.desc())
       .limit(limit)
       .offset(offset)
