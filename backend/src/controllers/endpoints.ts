@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import type { authRequest } from '../types/auth';
+import type { authRequest } from '../types/express';
 import { db } from '../prisma/db';
 import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpointsSchema';
 import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug';

@@ -3,7 +3,7 @@ import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
-import type { authRequest } from '../types/auth';
+import type { authRequest } from '../types/express';
 export const registerAuth = async (req: authRequest, res: Response) => {
   try {
     const validatedData = registerSchemma.safeParse(req.body);

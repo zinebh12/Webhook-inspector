@@ -1,8 +1,9 @@
-import type { authRequest } from '../types/auth';
+import type { authRequest } from '../types/express';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
 import { requestQuerySchema } from '../schemas/requestsSchema';
 import { getIo } from '../lib/socket';
+import { sanitizeHeaders } from '../helpers/removeHeaders';
 
 export const createRequest = async (req: Request, res: Response) => {
   try {
@@ -24,7 +25,7 @@ export const createRequest = async (req: Request, res: Response) => {
 
     const newRequest = await db.orm.public.WebhookRequest.create({
       method: req.method,
-      headers: JSON.parse(JSON.stringify(req.headers)),
+      headers: sanitizeHeaders(JSON.parse(JSON.stringify(req.headers))),
       body: req.body ?? null,
       query: JSON.parse(JSON.stringify(req.query)),
       ip: req.ip,
