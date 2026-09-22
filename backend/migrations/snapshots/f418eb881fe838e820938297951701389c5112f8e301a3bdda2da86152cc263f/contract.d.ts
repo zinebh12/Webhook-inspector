@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'262b8abc65d95b47fa25e4481e44dddc1e3d55f61b2b489d61333a5b4fac26a1'>;
+  StorageHashBase<'f418eb881fe838e820938297951701389c5112f8e301a3bdda2da86152cc263f'>;
 export type ExecutionHash =
   ExecutionHashBase<'7b5ec982b98c22122bab5a62a6941f8b96dce686cfb38ffba9d5e5f115d10d1d'>;
 export type ProfileHash =
@@ -252,7 +252,8 @@ export type FieldOutputTypes = {
     readonly WebhookEndpoint: {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'] | null;
-      readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly url: CodecTypes['pg/text@1']['output'];
+      readonly slug: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly isActive: CodecTypes['pg/bool@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
@@ -282,7 +283,8 @@ export type FieldInputTypes = {
     readonly WebhookEndpoint: {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'] | null;
-      readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly url: CodecTypes['pg/text@1']['input'];
+      readonly slug: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly isActive: CodecTypes['pg/bool@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
@@ -314,7 +316,8 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly isActive: CodecTypes['pg/bool@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'] | null;
-      readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly slug: CodecTypes['pg/text@1']['output'] | null;
+      readonly url: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
     };
     readonly webhookRequest: {
@@ -344,7 +347,8 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly isActive: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'] | null;
-      readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly slug: CodecTypes['pg/text@1']['input'] | null;
+      readonly url: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
     };
     readonly webhookRequest: {
@@ -374,7 +378,8 @@ export namespace Models {
   export type public_WebhookEndpoint = {
     id: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'] | null;
-    slug: CodecTypes['pg/text@1']['output'];
+    url: CodecTypes['pg/text@1']['output'];
+    slug: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     isActive: CodecTypes['pg/bool@1']['output'];
     userId: CodecTypes['pg/text@1']['output'];
@@ -470,10 +475,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
-                readonly slug: {
+                readonly url: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly slug: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -497,7 +507,10 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['slug'] }];
+              uniques: readonly [
+                { readonly columns: readonly ['url'] },
+                { readonly columns: readonly ['slug'] },
+              ];
               indexes: readonly [
                 {
                   readonly name: 'webhookEndpoint_userId_idx_a489d58a';
@@ -690,8 +703,12 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly slug: {
+              readonly url: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly slug: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly createdAt: {
@@ -738,6 +755,7 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
+                readonly url: { readonly column: 'url' };
                 readonly slug: { readonly column: 'slug' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly isActive: { readonly column: 'isActive' };

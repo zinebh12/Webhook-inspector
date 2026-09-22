@@ -14,7 +14,7 @@ export const createRequest = async (req: Request, res: Response) => {
         error: 'Invalid endpoint ID',
       });
     }
-    const endpoint = await db.orm.public.WebhookEndpoint.where({ url: slug }).first();
+    const endpoint = await db.orm.public.WebhookEndpoint.where({ slug }).first();
 
     if (!endpoint) {
       return res.status(404).json({ error: 'No endpoint found.' });

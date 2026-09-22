@@ -1,0 +1,73 @@
+[
+  {
+    "id": "column.public.webhookEndpoint.slug",
+    "label": "Add column \"slug\" to \"webhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "slug",
+        "table": "webhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"slug\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "webhookEndpoint",
+          "slug"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"slug\"",
+        "sql": "ALTER TABLE \"public\".\"webhookEndpoint\" ADD COLUMN \"slug\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"slug\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "webhookEndpoint",
+          "slug"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.backfill-webhookEndpoint-slug",
+    "label": "Data transform: backfill-webhookEndpoint-slug",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check backfill-webhookEndpoint-slug has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"webhookEndpoint\" WHERE \"slug\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run backfill-webhookEndpoint-slug",
+        "sql": "UPDATE \"public\".\"webhookEndpoint\" SET \"slug\" = \"url\" WHERE \"slug\" IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify backfill-webhookEndpoint-slug resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"webhookEndpoint\" WHERE \"slug\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ]
+  }
+]

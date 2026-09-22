@@ -128,7 +128,7 @@
                   "kind": "scalar"
                 }
               },
-              "url": {
+              "slug": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -190,8 +190,8 @@
                 "name": {
                   "column": "name"
                 },
-                "url": {
-                  "column": "url"
+                "slug": {
+                  "column": "slug"
                 },
                 "userId": {
                   "column": "userId"
@@ -409,7 +409,7 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "url": {
+                "slug": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
@@ -457,7 +457,7 @@
               "uniques": [
                 {
                   "columns": [
-                    "url"
+                    "slug"
                   ]
                 }
               ]
@@ -564,7 +564,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9df7215ba31c1938c791e13f9edd178cbc129815765053b0a45e8f18c5005e3d"
+    "storageHash": "262b8abc65d95b47fa25e4481e44dddc1e3d55f61b2b489d61333a5b4fac26a1"
   },
   "execution": {
     "executionHash": "7b5ec982b98c22122bab5a62a6941f8b96dce686cfb38ffba9d5e5f115d10d1d",

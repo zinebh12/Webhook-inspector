@@ -22,12 +22,12 @@ export const createEndpoint = async (req: authRequest, res: Response) => {
     }
     const endpoint = await db.orm.public.WebhookEndpoint.create({
       name: name,
-      url: slug,
+      slug: slug,
       userId: userId,
     });
     return res.status(200).json({
       endpoint,
-      fullUrl: buildWebhookUrl(endpoint.url),
+      fullUrl: buildWebhookUrl(endpoint.slug),
     });
   } catch (error) {
     console.error(error);
