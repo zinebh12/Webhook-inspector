@@ -15,6 +15,8 @@ const port = 3000;
 const server = createServer(app);
 initSocket(server);
 
+app.set('trust proxy', true);
+
 app.use(express.json());
 app.use(cookieParser());
 
