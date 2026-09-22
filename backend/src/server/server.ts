@@ -28,7 +28,21 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // socket io check!
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('subscribe', (endpointId: string) => {
+    socket.join(endpointId);
+    console.log(`Socket ${socket.id} subscribed to endpoint ${endpointId}`);
+  });
+
+  socket.on('unsubscribe', (endpointId: string) => {
+    socket.leave(endpointId);
+    console.log(`Socket ${socket.id} unsubscribed from endpoint ${endpointId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
 });
 
 server.listen(port, () => {
