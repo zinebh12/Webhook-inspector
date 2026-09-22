@@ -2,6 +2,7 @@ import type { authRequest } from '../types/auth';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
 import { requestQuerySchema } from '../schemas/requestsSchema';
+import { getIo } from '../lib/socket';
 
 export const createRequest = async (req: Request, res: Response) => {
   try {
@@ -21,7 +22,7 @@ export const createRequest = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Endpoint is not active.' });
     }
 
-    await db.orm.public.WebhookRequest.create({
+    const newRequest = await db.orm.public.WebhookRequest.create({
       method: req.method,
       headers: JSON.parse(JSON.stringify(req.headers)),
       body: req.body ?? null,
@@ -30,6 +31,8 @@ export const createRequest = async (req: Request, res: Response) => {
       statusCode: 200,
       endpointId: endpoint.id,
     });
+    
+    getIo().to(endpoint.id).emit('newRequest', newRequest);
 
     return res.status(200).json({ received: true });
   } catch (error) {
