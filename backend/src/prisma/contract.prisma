@@ -42,3 +42,16 @@ model WebhookRequest {
     @@index([endpointId])
     @@index([receivedAt])
 }
+
+model ReplayAttempt {
+  id            String   @id @default(uuid())
+  url           String
+  success       Boolean
+  statusCode    Int?
+  responseBody  Json?
+  errorMessage  String?
+  responseTime  Int?
+  createdAt     DateTime @default(now())
+  requestId     String
+  request       WebhookRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}

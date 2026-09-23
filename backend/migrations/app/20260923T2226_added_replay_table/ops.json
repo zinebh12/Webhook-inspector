@@ -1,0 +1,122 @@
+[
+  {
+    "id": "table.replayAttempt",
+    "label": "Create table \"replayAttempt\"",
+    "summary": "Creates table \"replayAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "replayAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"replayAttempt\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"replayAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"replayAttempt\"",
+        "sql": "CREATE TABLE \"public\".\"replayAttempt\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"errorMessage\" text,\n  \"id\" text NOT NULL,\n  \"requestId\" text NOT NULL,\n  \"responseBody\" json,\n  \"responseTime\" int4,\n  \"statusCode\" int4,\n  \"success\" bool NOT NULL,\n  \"url\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"replayAttempt\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"replayAttempt\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.replayAttempt.replayAttempt_requestId_idx_fd667f92",
+    "label": "Create index \"replayAttempt_requestId_idx_fd667f92\" on \"replayAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "replayAttempt_requestId_idx_fd667f92",
+        "table": "replayAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"replayAttempt_requestId_idx_fd667f92\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"replayAttempt_requestId_idx_fd667f92\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"replayAttempt_requestId_idx_fd667f92\"",
+        "sql": "CREATE INDEX \"replayAttempt_requestId_idx_fd667f92\" ON \"public\".\"replayAttempt\" (\"requestId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"replayAttempt_requestId_idx_fd667f92\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"replayAttempt_requestId_idx_fd667f92\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.replayAttempt.replayAttempt_requestId_fkey",
+    "label": "Add foreign key \"replayAttempt_requestId_fkey\" on \"replayAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "replayAttempt_requestId_fkey",
+        "table": "replayAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"replayAttempt_requestId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "replayAttempt_requestId_fkey",
+          "public",
+          "\"public\".\"replayAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"replayAttempt_requestId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"replayAttempt\"\nADD CONSTRAINT \"replayAttempt_requestId_fkey\"\nFOREIGN KEY (\"requestId\")\nREFERENCES \"public\".\"webhookRequest\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"replayAttempt_requestId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "replayAttempt_requestId_fkey",
+          "public",
+          "\"public\".\"replayAttempt\""
+        ]
+      }
+    ]
+  }
+]

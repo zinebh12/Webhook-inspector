@@ -31,7 +31,6 @@ export const send = async (requestData: ReconstructedRequest, url: string): Prom
       responseTime: Date.now() - start,
     };
   } catch (error) {
-    console.error(error);
     return {
       success: false,
       responseTime: Date.now() - start,
