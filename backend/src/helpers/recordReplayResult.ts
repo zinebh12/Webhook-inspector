@@ -1,3 +1,6 @@
+import { send } from './sentReplayRequest';
+import { db } from '../prisma/db';
+
 type SendResult = {
   success: boolean;
   statusCode?: number;
@@ -6,4 +9,31 @@ type SendResult = {
   error?: string;
 };
 
-export const record = async (requestId: string, url: string, resultObject: SendResult) => {};
+type ReconstructedRequest = {
+  method: string;
+  headers: Record<string, string>;
+  body: unknown;
+};
+
+export const record = async (
+  requestData: ReconstructedRequest,
+  requestId: string,
+  url: string,
+  resultObject: SendResult,
+) => {
+  try {
+    const { success, statusCode, responseBody, responseTime, error } = resultObject;
+    await db.orm.public.ReplayAttempt.create({
+      success,
+      statusCode,
+      responseBody,
+      responseTime,
+      errorMessage: error,
+      requestId,
+      url,
+    });
+  } catch (error) {
+    console.error('Failed to record replay result:', error);
+    throw error;
+  }
+};
