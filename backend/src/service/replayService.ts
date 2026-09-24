@@ -1,6 +1,6 @@
-import { reconstruct } from '../helpers/reconstructRequest';
-import { send } from '../helpers/sentReplayRequest';
-import { record } from '../helpers/recordReplayResult';
+import { reconstruct } from '../helpers/reconstructRequest.helper';
+import { send } from '../helpers/sendReplayRequest.helper';
+import { record } from '../helpers/recordReplayResult.helper';
 
 export const replayService = async (requestId: string, url: string) => {
   const requestData = await reconstruct(requestId);

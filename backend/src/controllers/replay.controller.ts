@@ -4,7 +4,7 @@ import { replaySchema } from '../schemas/replay.schema';
 
 export const setUpReplay = async (req: Request, res: Response) => {
   try {
-    const validatedQuery = replaySchema.safeParse(req.query);
+    const validatedQuery = replaySchema.safeParse(req.body);
     if (!validatedQuery.success) {
       return res.status(400).json({
         error: 'Validation failed',

@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
 import { requestQuerySchema } from '../schemas/requests.schema';
 import { getIo } from '../lib/socket';
-import { sanitizeHeaders } from '../helpers/removeHeaders';
+import { sanitizeHeaders } from '../helpers/removeHeaders.helper';
 
 export const createRequest = async (req: Request, res: Response) => {
   try {

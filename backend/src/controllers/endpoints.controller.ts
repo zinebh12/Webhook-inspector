@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import type { authRequest } from '../types/express';
 import { db } from '../prisma/db';
 import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpoints.schema';
-import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug';
+import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug.helper';
 export const createEndpoint = async (req: authRequest, res: Response) => {
   try {
     const validatedData = createEndpointSchema.safeParse(req.body);
