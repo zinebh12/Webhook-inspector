@@ -3,12 +3,15 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'node:http';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 import { initSocket } from '../lib/socket';
 import authRoute from '../routes/auth.route';
 import endpointRoutes from '../routes/endpoint.route';
 import webhookRequestsRoutes from '../routes/webhookRequests.route';
 import webhookReceiverRoute from '../routes/webhookReceiver.route';
 import replayRoute from '../routes/replay.route';
+
+dotenv.config();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -28,7 +31,6 @@ const replayLimiter = rateLimit({
   message: { error: 'Too many replay attempts, please try again later.' },
 });
 
-dotenv.config();
 const app: Express = express();
 const port = 3000;
 
@@ -37,8 +39,31 @@ initSocket(server);
 
 app.set('trust proxy', true);
 
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
+
+const allowedOrigins = [process.env.APP_URL, 'http://localhost:5173'].filter(Boolean);
+
+const setOrigin = (
+  origin: string | undefined,
+  callback: (err: Error | null, allow?: boolean) => void,
+) => {
+  if (!origin || allowedOrigins.includes(origin)) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
+app.use(
+  cors({
+    origin: setOrigin,
+    optionsSuccessStatus: 200,
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'PATCH', 'PUT', 'POST', 'DELETE'],
+  }),
+);
 
 app.use(limiter);
 
