@@ -3,6 +3,6 @@ import { setUpReplay } from '../controllers/replay.controller';
 
 const router = Router();
 
-router.post('/request/:id/replay', setUpReplay);
+router.post('/:id/replay', setUpReplay);
 
 export default router;
