@@ -7,6 +7,7 @@ import authRoute from './../routes/authRoute';
 import endpointRoutes from './../routes/endpointRoutes';
 import webhookRequestsRoutes from './../routes/webhookRequestsRoutes';
 import webhookReceiverRoute from '../routes/webhookReceiverRoute';
+import replayRoute from '../routes/replay.route';
 
 dotenv.config();
 const app: Express = express();
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/webhook/endpoints', endpointRoutes);
 app.use('/api/webhook/request', webhookRequestsRoutes);
 app.use('/webhook', webhookReceiverRoute);
+app.use('/webhook', replayRoute);
 
 //health check!
 app.get('/api/health', (req: Request, res: Response) => {
