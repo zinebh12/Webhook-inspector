@@ -1,5 +1,5 @@
 import type { ReconstructedRequest, SendResult } from '../types/express';
-import { cleanHeader } from './cleaHeaders.helper';
+import { cleanHeader } from './cleanHeaders.helper';
 
 
 export const send = async (requestData: ReconstructedRequest, url: string): Promise<SendResult> => {

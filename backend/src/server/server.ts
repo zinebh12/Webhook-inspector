@@ -2,12 +2,31 @@ import express, { type Express, type Request, type Response } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'node:http';
+import rateLimit from 'express-rate-limit';
 import { initSocket } from '../lib/socket';
 import authRoute from '../routes/auth.route';
 import endpointRoutes from '../routes/endpoint.route';
 import webhookRequestsRoutes from '../routes/webhookRequests.route';
 import webhookReceiverRoute from '../routes/webhookReceiver.route';
 import replayRoute from '../routes/replay.route';
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  ipv6Subnet: 56,
+  message: { error: 'Too many requests, please try again later.' },
+});
+
+const replayLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  ipv6Subnet: 56,
+  message: { error: 'Too many replay attempts, please try again later.' },
+});
 
 dotenv.config();
 const app: Express = express();
@@ -21,11 +40,13 @@ app.set('trust proxy', true);
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(limiter);
+
 app.use('/api/auth', authRoute);
 app.use('/api/webhook/endpoints', endpointRoutes);
 app.use('/api/webhook/request', webhookRequestsRoutes);
 app.use('/webhook', webhookReceiverRoute);
-app.use('/webhook', replayRoute);
+app.use('/webhook', replayLimiter, replayRoute);
 
 //health check!
 app.get('/api/health', (req: Request, res: Response) => {
