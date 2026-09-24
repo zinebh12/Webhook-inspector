@@ -1,7 +1,7 @@
 import type { authRequest } from '../types/express';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
-import { requestQuerySchema } from '../schemas/requestsSchema';
+import { requestQuerySchema } from '../schemas/requests.schema';
 import { getIo } from '../lib/socket';
 import { sanitizeHeaders } from '../helpers/removeHeaders';
 

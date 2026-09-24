@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { setUpReplay } from '../controllers/replay';
+import { setUpReplay } from '../controllers/replay.controller';
 
 const router = Router();
 

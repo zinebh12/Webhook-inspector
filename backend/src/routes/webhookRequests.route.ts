@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSingleRequest, deleteRequest } from '../controllers/webhookRequests';
+import { getSingleRequest, deleteRequest } from '../controllers/webhookRequests.controller';
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();

@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'node:http';
 import { initSocket } from '../lib/socket';
-import authRoute from './../routes/authRoute';
-import endpointRoutes from './../routes/endpointRoutes';
-import webhookRequestsRoutes from './../routes/webhookRequestsRoutes';
-import webhookReceiverRoute from '../routes/webhookReceiverRoute';
+import authRoute from '../routes/auth.route';
+import endpointRoutes from '../routes/endpoint.route';
+import webhookRequestsRoutes from '../routes/webhookRequests.route';
+import webhookReceiverRoute from '../routes/webhookReceiver.route';
 import replayRoute from '../routes/replay.route';
 
 dotenv.config();

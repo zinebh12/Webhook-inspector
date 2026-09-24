@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { replayService } from '../service/replayService';
-import { replaySchema } from '../schemas/replaySchema';
+import { replaySchema } from '../schemas/replay.schema';
 
 export const setUpReplay = async (req: Request, res: Response) => {
   try {

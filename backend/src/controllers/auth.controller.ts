@@ -1,4 +1,4 @@
-import { registerSchemma, loginSchema } from '../schemas/authSchema';
+import { registerSchema, loginSchema } from '../schemas/auth.schema';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import type { Request, Response } from 'express';
@@ -6,7 +6,7 @@ import { db } from '../prisma/db';
 import type { authRequest } from '../types/express';
 export const registerAuth = async (req: authRequest, res: Response) => {
   try {
-    const validatedData = registerSchemma.safeParse(req.body);
+    const validatedData = registerSchema.safeParse(req.body);
     if (!validatedData.success) {
       return res.status(400).json({
         error: 'Validation failed',
@@ -17,7 +17,7 @@ export const registerAuth = async (req: authRequest, res: Response) => {
     const existingUser = await db.orm.public.User.where({ email }).first();
     if (existingUser?.email) {
       return res.status(400).json({
-        error: 'User already exsits',
+        error: 'User already exists',
       });
     }
     const passwordHash = await argon2.hash(password);

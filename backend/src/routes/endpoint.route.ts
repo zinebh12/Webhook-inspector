@@ -5,8 +5,8 @@ import {
   createEndpoint,
   deleteEndpoint,
   toggleEndpointActivity,
-} from '../controllers/endpoints';
-import { getRequests, clearRequests } from '../controllers/webhookRequests';
+} from '../controllers/endpoints.controller';
+import { getRequests, clearRequests } from '../controllers/webhookRequests.controller';
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();

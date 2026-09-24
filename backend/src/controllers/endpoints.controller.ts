@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { authRequest } from '../types/express';
 import { db } from '../prisma/db';
-import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpointsSchema';
+import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpoints.schema';
 import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug';
 export const createEndpoint = async (req: authRequest, res: Response) => {
   try {
