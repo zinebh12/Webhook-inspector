@@ -1,16 +1,4 @@
-type ReconstructedRequest = {
-  method: string;
-  headers: Record<string, string>;
-  body: unknown;
-};
-
-type SendResult = {
-  success: boolean;
-  statusCode?: number;
-  responseBody?: unknown;
-  responseTime: number;
-  error?: string;
-};
+import type { ReconstructedRequest, SendResult } from '../types/express';
 
 export const send = async (requestData: ReconstructedRequest, url: string): Promise<SendResult> => {
   const start = Date.now();
@@ -27,7 +15,7 @@ export const send = async (requestData: ReconstructedRequest, url: string): Prom
     return {
       success: response.ok,
       statusCode: response.status,
-      responseBody,
+      responseBody: responseBody,
       responseTime: Date.now() - start,
     };
   } catch (error) {

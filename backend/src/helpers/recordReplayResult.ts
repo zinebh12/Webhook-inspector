@@ -1,19 +1,5 @@
-import { send } from './sentReplayRequest';
 import { db } from '../prisma/db';
-
-type SendResult = {
-  success: boolean;
-  statusCode?: number;
-  responseBody?: unknown;
-  responseTime: number;
-  error?: string;
-};
-
-type ReconstructedRequest = {
-  method: string;
-  headers: Record<string, string>;
-  body: unknown;
-};
+import type { SendResult, ReconstructedRequest } from '../types/express';
 
 export const record = async (
   requestData: ReconstructedRequest,
