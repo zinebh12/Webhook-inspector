@@ -1,8 +1,7 @@
 import { db } from '../prisma/db';
-import type { SendResult, ReconstructedRequest } from '../types/express';
+import type { SendResult} from '../types/express';
 
 export const record = async (
-  requestData: ReconstructedRequest,
   requestId: string,
   url: string,
   resultObject: SendResult,

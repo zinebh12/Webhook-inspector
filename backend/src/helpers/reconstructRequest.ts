@@ -9,7 +9,7 @@ export const reconstruct = async (requestId: string) => {
 
   return {
     method: existingRequest.method,
-    headers: existingRequest.headers,
+    headers: (existingRequest.headers as Record<string, string>) ?? {},
     body: existingRequest.body,
     query: existingRequest.query,
   };
