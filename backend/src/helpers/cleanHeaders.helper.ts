@@ -12,7 +12,7 @@ const FORBIDDEN_HEADERS = [
   'expect',
 ];
 
-export const cleanHeader = (headers: ReconstructedRequest['headers']) =>
+export const cleanHeaders = (headers: ReconstructedRequest['headers']) =>
   Object.fromEntries(
     Object.entries(headers)
       .filter(([key]) => !FORBIDDEN_HEADERS.includes(key.toLowerCase()))
