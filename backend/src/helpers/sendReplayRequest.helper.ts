@@ -1,6 +1,5 @@
 import type { ReconstructedRequest, SendResult } from '../types/express';
-import { cleanHeader } from './cleanHeaders.helper';
-
+import { cleanHeaders } from './cleanHeaders.helper';
 
 export const send = async (requestData: ReconstructedRequest, url: string): Promise<SendResult> => {
   const start = Date.now();
@@ -9,7 +8,7 @@ export const send = async (requestData: ReconstructedRequest, url: string): Prom
 
     const response = await fetch(url, {
       method: requestData.method,
-      headers: cleanHeader(requestData.headers),
+      headers: cleanHeaders(requestData.headers),
       body: hasBody ? JSON.stringify(requestData.body) : undefined,
     });
 
