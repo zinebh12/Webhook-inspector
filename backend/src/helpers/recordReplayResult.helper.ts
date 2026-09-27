@@ -8,7 +8,7 @@ export const record = async (
 ) => {
   try {
     const { success, statusCode, responseBody, responseTime, error } = resultObject;
-    await db.orm.public.ReplayAttempt.create({
+    return await db.orm.public.ReplayAttempt.create({
       success,
       statusCode,
       responseBody,
