@@ -11,7 +11,16 @@ const config: Config = {
 
   // Stop running tests after `n` failures
   // bail: 0,
-  preset: 'ts-jest',
+  // preset: 'ts-jest',
+  testEnvironment: 'node',
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.jest.json',
+      },
+    ],
+  },
   // The directory where Jest should store its cached dependency information
   // cacheDirectory: "C:\\Users\\DELL\\AppData\\Local\\Temp\\jest",
 
