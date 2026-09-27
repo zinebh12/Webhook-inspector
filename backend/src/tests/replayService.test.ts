@@ -21,7 +21,7 @@ const sendMock = send as jest.Mock<(...args: any[]) => any>;
 const recordMock = record as jest.Mock<(...args: any[]) => any>;
 
 describe('Replay service', () => {
-  it('Resolves in the intended order', async () => {
+  it('resolves in the intended order', async () => {
     const success = {
       success: true,
       statusCode: 200,
