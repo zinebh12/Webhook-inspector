@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { record } from '../helpers/recordReplayResult.helper';
-import type { SendResult } from '../types/express';
-import { db } from '../prisma/db';
+import { record } from './../../helpers/recordReplayResult.helper';
+import type { SendResult } from './../../types/express';
+import { db } from './../../prisma/db';
 
 jest.mock('../prisma/db', () => ({
   db: {

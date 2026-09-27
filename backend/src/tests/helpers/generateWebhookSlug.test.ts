@@ -1,4 +1,4 @@
-import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug.helper';
+import { generateWebhookSlug, buildWebhookUrl } from './../../helpers/generateWebhookSlug.helper';
 import { describe, expect, it } from '@jest/globals';
 
 describe('generates webhook slug', () => {

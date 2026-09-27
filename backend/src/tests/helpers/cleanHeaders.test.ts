@@ -1,4 +1,4 @@
-import { cleanHeaders } from '../helpers/cleanHeaders.helper';
+import { cleanHeaders } from '../../helpers/cleanHeaders.helper';
 import { describe, it, expect } from '@jest/globals';
 
 describe('clean header', () => {

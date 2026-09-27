@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { reconstruct } from '../helpers/reconstructRequest.helper';
-import { send } from '../helpers/sendReplayRequest.helper';
-import { record } from '../helpers/recordReplayResult.helper';
-import { replayService } from '../service/replayService';
+import { reconstruct } from '../../helpers/reconstructRequest.helper';
+import { send } from '../../helpers/sendReplayRequest.helper';
+import { record } from '../../helpers/recordReplayResult.helper';
+import { replayService } from '../../service/replayService';
 import { describe, expect, it, jest } from '@jest/globals';
-import type { SendResult } from '../types/express';
+import type { SendResult } from '../../types/express';
 
 jest.mock('../helpers/reconstructRequest.helper', () => ({
   reconstruct: jest.fn(),

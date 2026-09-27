@@ -1,4 +1,4 @@
-import { sanitizeHeaders } from '../helpers/removeHeaders.helper';
+import { sanitizeHeaders } from '../../helpers/removeHeaders.helper';
 import { describe, expect, it } from '@jest/globals';
 
 describe('sanitize headers', () => {

@@ -1,4 +1,4 @@
-import { send } from '../helpers/sendReplayRequest.helper';
+import { send } from './../../helpers/sendReplayRequest.helper';
 import { describe, expect, it, jest } from '@jest/globals';
 
 const mockedFetch = jest.spyOn(global, 'fetch');
