@@ -132,3 +132,46 @@ describe('GET /endpoint', () => {
     expect(response.body).toEqual([]);
   });
 });
+
+describe('GET /endpoint/:id', () => {
+  it('returns existing endpoint', async () => {
+    const mockEndpointRow = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: '7d9e2f14-3a5b-4c8e-9f21-6b0a1d3c5e77',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+
+    mockGet.mockReturnValue({
+      first: jest.fn<() => Promise<typeof mockEndpointRow>>().mockResolvedValue(mockEndpointRow),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .expect(200);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        ...mockEndpointRow,
+        createdAt: '2026-09-20T10:00:00.000Z',
+      }),
+    );
+  });
+  it('returns 404 if endpoint does not exist', async () => {
+    const noEndpoint = { error: 'Endpoint not found' };
+
+    mockGet.mockReturnValue({
+      first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .expect(404);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual(noEndpoint);
+  });
+});
