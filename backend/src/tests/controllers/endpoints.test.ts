@@ -4,6 +4,7 @@ import request from 'supertest';
 import { describe, it, expect, jest } from '@jest/globals';
 import { db } from '../../prisma/db';
 import app from '../../server/app';
+import { getEndpoints } from '../../controllers/endpoints.controller';
 
 //mock middleware
 jest.mock('../../middleware/authMiddleware', () => ({
@@ -20,6 +21,7 @@ jest.mock('../../prisma/db', () => ({
       public: {
         WebhookEndpoint: {
           create: jest.fn(),
+          where: jest.fn(),
         },
       },
     },
@@ -28,6 +30,10 @@ jest.mock('../../prisma/db', () => ({
 
 const mockCreate = db.orm.public.WebhookEndpoint.create as jest.MockedFunction<
   typeof db.orm.public.WebhookEndpoint.create
+>;
+
+const mockGet = db.orm.public.WebhookEndpoint.where as jest.MockedFunction<
+  typeof db.orm.public.WebhookEndpoint.where
 >;
 
 describe('POST /endpoint', () => {
@@ -85,5 +91,44 @@ describe('POST /endpoint', () => {
     expect(response.status).toBe(201);
     expect(response.body.fullUrl).toMatch(/^http:\/\/.+\/hooks\/.+/);
     expect(response.body.endpoint.userId).toBe('user-1');
+  });
+});
+
+describe('GET /endpoint', () => {
+  it('return rows when found', async () => {
+    const mockEndpointRow = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: '7d9e2f14-3a5b-4c8e-9f21-6b0a1d3c5e77',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+
+    mockGet.mockReturnValue({
+      all: jest
+        .fn<() => Promise<(typeof mockEndpointRow)[]>>()
+        .mockResolvedValue([mockEndpointRow]),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app).get('/api/webhook/endpoints').expect(200);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      expect.objectContaining({
+        userId: '7d9e2f14-3a5b-4c8e-9f21-6b0a1d3c5e77',
+      }),
+    ]);
+  });
+
+  it('confirms empty rows return', async () => {
+    mockGet.mockReturnValue({
+      all: jest.fn<() => Promise<[]>>().mockResolvedValue([]),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app).get('/api/webhook/endpoints').expect(200);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
 });
