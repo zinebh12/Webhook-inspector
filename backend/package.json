@@ -37,6 +37,7 @@
     "@jest/globals": "^30.5.2",
     "@prisma/cli-engine": "^0.4.0",
     "@types/node": "^26.6.0",
+    "@types/supertest": "^7.2.1",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",

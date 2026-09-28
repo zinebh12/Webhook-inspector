@@ -6,13 +6,13 @@ import { replayService } from '../../service/replayService';
 import { describe, expect, it, jest } from '@jest/globals';
 import type { SendResult } from '../../types/express';
 
-jest.mock('../helpers/reconstructRequest.helper', () => ({
+jest.mock('../../helpers/reconstructRequest.helper', () => ({
   reconstruct: jest.fn(),
 }));
-jest.mock('../helpers/sendReplayRequest.helper', () => ({
+jest.mock('../../helpers/sendReplayRequest.helper', () => ({
   send: jest.fn(),
 }));
-jest.mock('../helpers/recordReplayResult.helper', () => ({
+jest.mock('../../helpers/recordReplayResult.helper', () => ({
   record: jest.fn(),
 }));
 

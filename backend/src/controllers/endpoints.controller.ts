@@ -25,7 +25,7 @@ export const createEndpoint = async (req: authRequest, res: Response) => {
       slug: slug,
       userId: userId,
     });
-    return res.status(200).json({
+    return res.status(201).json({
       endpoint,
       fullUrl: buildWebhookUrl(endpoint.slug),
     });

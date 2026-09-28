@@ -2,7 +2,7 @@ import { reconstruct } from './../../helpers/reconstructRequest.helper';
 import { describe, expect, it, jest } from '@jest/globals';
 import { db } from './../../prisma/db';
 
-jest.mock('../prisma/db', () => ({
+jest.mock('../../prisma/db', () => ({
   db: {
     orm: {
       public: {
