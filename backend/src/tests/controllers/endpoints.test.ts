@@ -4,7 +4,6 @@ import request from 'supertest';
 import { describe, it, expect, jest } from '@jest/globals';
 import { db } from '../../prisma/db';
 import app from '../../server/app';
-import { getEndpoints } from '../../controllers/endpoints.controller';
 
 //mock middleware
 jest.mock('../../middleware/authMiddleware', () => ({
