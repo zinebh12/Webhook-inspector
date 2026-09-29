@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { authRequest } from '../types/express';
 import { db } from '../prisma/db';
-import { createEndpointSchema, updateEndpointSchema } from '../schemas/endpoints.schema';
+import { createEndpointSchema, updateEndpointSchema, idSchema } from '../schemas/endpoints.schema';
 import { generateWebhookSlug, buildWebhookUrl } from '../helpers/generateWebhookSlug.helper';
 export const createEndpoint = async (req: authRequest, res: Response) => {
   try {
@@ -54,15 +54,14 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    const id = req.params.id;
+    const id = idSchema.safeParse(req.params.id);
 
-    if (!id || typeof id !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid endpoint ID',
-      });
+    if (!id.success) {
+      return res.status(400).json({ error: 'Invalid endpoint ID format' });
     }
+
     const endpoint = await db.orm.public.WebhookEndpoint.where({
-      id: id,
+      id: id.data,
       userId: req.userId,
     }).first();
     if (!endpoint) {
@@ -129,16 +128,14 @@ export const deleteEndpoint = async (req: authRequest, res: Response) => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    const id = req.params.id;
+    const id = idSchema.safeParse(req.params.id);
 
-    if (!id || typeof id !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid endpoint ID',
-      });
+    if (!id.success) {
+      return res.status(400).json({ error: 'Invalid endpoint ID format' });
     }
 
     const deleteEndpoint = await db.orm.public.WebhookEndpoint.where({
-      id: id,
+      id: id.data,
       userId: req.userId,
     }).delete();
 
@@ -147,7 +144,7 @@ export const deleteEndpoint = async (req: authRequest, res: Response) => {
         error: 'Endpoint not found',
       });
     }
-    return res.status(204).json(deleteEndpoint);
+    return res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).json({

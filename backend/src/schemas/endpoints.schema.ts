@@ -7,3 +7,5 @@ export const createEndpointSchema = z.object({
 export const updateEndpointSchema = z.object({
   isActive: z.boolean(),
 });
+
+export const idSchema = z.uuid();
