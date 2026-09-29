@@ -92,17 +92,15 @@ export const toggleEndpointActivity = async (req: authRequest, res: Response) =>
       });
     }
     const { isActive } = validatedData.data;
-    const id = req.params.id;
     const userId = req.userId;
+    const id = idSchema.safeParse(req.params.id);
 
-    if (!id || typeof id !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid endpoint ID',
-      });
+    if (!id.success) {
+      return res.status(400).json({ error: 'Invalid endpoint ID format' });
     }
 
     const toggleIsActive = await db.orm.public.WebhookEndpoint.where({
-      id: id,
+      id: id.data,
       userId: userId,
     }).update({
       isActive: isActive,

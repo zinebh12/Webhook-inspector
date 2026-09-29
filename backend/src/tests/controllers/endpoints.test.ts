@@ -22,25 +22,18 @@ jest.mock('../../prisma/db', () => ({
         WebhookEndpoint: {
           create: jest.fn(),
           where: jest.fn(),
-          delete: jest.fn(),
         },
       },
     },
   },
 }));
 
-const mockCreate = db.orm.public.WebhookEndpoint.create as jest.MockedFunction<
-  typeof db.orm.public.WebhookEndpoint.create
->;
+const mockCreate = jest.spyOn(db.orm.public.WebhookEndpoint, 'create');
 
-const mockGet = db.orm.public.WebhookEndpoint.where as jest.MockedFunction<
-  typeof db.orm.public.WebhookEndpoint.where
->;
-
-const mockDelete = jest.spyOn(db.orm.public.WebhookEndpoint, 'where');
+const mockGet = jest.spyOn(db.orm.public.WebhookEndpoint, 'where');
 
 describe('POST /endpoint', () => {
-  it('resolves when a new endpoint is created', async () => {
+  it('resolves 201 when a new endpoint is created', async () => {
     const mockEndpoint = {
       name: 'new-endpoint',
       slug: 'a-slug',
@@ -62,7 +55,7 @@ describe('POST /endpoint', () => {
     );
   });
 
-  it('checks for missing and invalid fields', async () => {
+  it('checks for missing and invalid fields, returns 400', async () => {
     const response = await request(app)
       .post('/api/webhook/endpoints')
       .send({ userId: 'user-1' })
@@ -74,7 +67,7 @@ describe('POST /endpoint', () => {
 
     expect(db.orm.public.WebhookEndpoint.create).not.toHaveBeenCalled();
   });
-  it('confirms webhook url is formatted in the response', async () => {
+  it('confirms webhook url is formatted in the response, returns 201', async () => {
     const mockEndpoint = {
       id: 'endpoint-1',
       name: 'new-endpoint',
@@ -95,10 +88,25 @@ describe('POST /endpoint', () => {
     expect(response.body.fullUrl).toMatch(/^http:\/\/.+\/hooks\/.+/);
     expect(response.body.endpoint.userId).toBe('user-1');
   });
+  it('returns 500 if db call fails', async () => {
+    mockCreate.mockRejectedValue(new Error('Error creating new Endpoint'));
+    mockGet.mockReturnValue({
+      all: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Error fetching Endpoints')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .post('/api/webhook/endpoints')
+      .send({ name: 'new-endpoint', userId: 'user-1' })
+      .expect(500);
+
+    expect(response.body.error).toBe('Error creating new Endpoint');
+  });
 });
 
 describe('GET /endpoint', () => {
-  it('return rows when found', async () => {
+  it('return 200 rows when found', async () => {
     const mockEndpointRow = {
       id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
       userId: '7d9e2f14-3a5b-4c8e-9f21-6b0a1d3c5e77',
@@ -124,7 +132,7 @@ describe('GET /endpoint', () => {
     ]);
   });
 
-  it('confirms empty rows return', async () => {
+  it('confirms empty rows return, returns 200', async () => {
     mockGet.mockReturnValue({
       all: jest.fn<() => Promise<[]>>().mockResolvedValue([]),
     } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
@@ -133,6 +141,17 @@ describe('GET /endpoint', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
+  });
+  it('returns 500 if db call fails', async () => {
+    mockGet.mockReturnValue({
+      all: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Error fetching Endpoints')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app).get('/api/webhook/endpoints').expect(500);
+
+    expect(response.body.error).toBe('Error fetching Endpoints');
   });
 });
 
@@ -179,6 +198,19 @@ describe('GET /endpoint/:id', () => {
 
     expect(response.body).toEqual(noEndpoint);
   });
+  it('returns 500 if db call fails', async () => {
+    mockGet.mockReturnValue({
+      where: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Failed to fetch endpoint')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .expect(500);
+
+    expect(response.body.error).toBe('Failed to fetch endpoint');
+  });
 });
 
 describe('DELETE /endpoint/:id', () => {
@@ -192,7 +224,7 @@ describe('DELETE /endpoint/:id', () => {
       createdAt: new Date('2026-09-20T10:00:00.000Z'),
     };
 
-    mockDelete.mockReturnValue({
+    mockGet.mockReturnValue({
       delete: jest.fn<() => Promise<typeof mockEndpointRow>>().mockResolvedValue(mockEndpointRow),
     } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
 
@@ -207,7 +239,7 @@ describe('DELETE /endpoint/:id', () => {
   });
 
   it('returns 404 if id does not exist', async () => {
-    mockDelete.mockReturnValue({
+    mockGet.mockReturnValue({
       delete: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
     } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
 
@@ -219,7 +251,7 @@ describe('DELETE /endpoint/:id', () => {
   });
 
   it('returns 500 if db call fails', async () => {
-    mockDelete.mockReturnValue({
+    mockGet.mockReturnValue({
       delete: jest
         .fn<() => Promise<typeof undefined>>()
         .mockRejectedValue(new Error('Failed to delete Endpoint')),
@@ -230,5 +262,50 @@ describe('DELETE /endpoint/:id', () => {
       .expect(500);
 
     expect(response.body.error).toBe('Failed to delete Endpoint');
+  });
+});
+
+describe('PATCH /endpoint/:id', () => {
+  it('confirms returned endpoint reflects new status, returns 200', async () => {
+    const mockToggle = { isActive: false };
+    mockGet.mockReturnValue({
+      update: jest.fn<() => Promise<typeof mockToggle>>().mockResolvedValue(mockToggle),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .patch('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .send(mockToggle)
+      .expect(200);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockToggle);
+  });
+
+  it('returns 404 if endpoint does not exist', async () => {
+    mockGet.mockReturnValue({
+      update: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .patch('/api/webhook/endpoints/00000000-0000-0000-0000-000000000000')
+      .send({ isActive: false })
+      .expect(404);
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toEqual('Endpoint not found');
+  });
+  it('returns 500 if db call fails', async () => {
+    mockGet.mockReturnValue({
+      update: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Failed to update endpoint')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .patch('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .send({ isActive: false })
+      .expect(500);
+
+    expect(response.body.error).toBe('Failed to update endpoint');
   });
 });
