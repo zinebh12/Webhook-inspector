@@ -30,7 +30,7 @@ export const createEndpoint = async (req: authRequest, res: Response) => {
       fullUrl: buildWebhookUrl(endpoint.slug),
     });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return res.status(500).json({ error: 'Error creating new Endpoint' });
   }
 };
@@ -44,7 +44,7 @@ export const getEndpoints = async (req: authRequest, res: Response) => {
     const endpoint = await db.orm.public.WebhookEndpoint.where({ userId }).all();
     return res.status(200).json(endpoint);
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return res.status(500).json({ error: 'Error fetching Endpoints' });
   }
 };
@@ -71,7 +71,7 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
     }
     return res.status(200).json(endpoint);
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({
       error: 'Failed to fetch endpoint',
     });
@@ -114,7 +114,7 @@ export const toggleEndpointActivity = async (req: authRequest, res: Response) =>
 
     return res.status(200).json(toggleIsActive);
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({
       error: 'Failed to update endpoint',
     });
@@ -144,7 +144,7 @@ export const deleteEndpoint = async (req: authRequest, res: Response) => {
     }
     return res.status(204).send();
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({
       error: 'Failed to delete Endpoint',
     });

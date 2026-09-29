@@ -1,20 +1,20 @@
 import type { authRequest } from '../types/express';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
-import { requestQuerySchema } from '../schemas/requests.schema';
+import { requestQuerySchema, slugSchema } from '../schemas/requests.schema';
 import { getIo } from '../lib/socket';
 import { sanitizeHeaders } from '../helpers/removeHeaders.helper';
 
 export const createRequest = async (req: Request, res: Response) => {
   try {
-    const slug = req.params.slug;
+    const slug = slugSchema.safeParse(req.params.slug);
 
-    if (!slug || typeof slug !== 'string') {
+    if (!slug.success) {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
       });
     }
-    const endpoint = await db.orm.public.WebhookEndpoint.where({ slug }).first();
+    const endpoint = await db.orm.public.WebhookEndpoint.where({ slug: slug.data }).first();
 
     if (!endpoint) {
       return res.status(404).json({ error: 'No endpoint found.' });
@@ -32,13 +32,13 @@ export const createRequest = async (req: Request, res: Response) => {
       statusCode: 200,
       endpointId: endpoint.id,
     });
-    
+
     getIo().to(endpoint.id).emit('newRequest', newRequest);
 
     return res.status(200).json({ received: true });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Something went wrong' });
+    return res.status(500).json({ error: 'Failed to create webhook request' });
   }
 };
 
