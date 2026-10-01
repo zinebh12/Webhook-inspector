@@ -4,6 +4,7 @@ import { db } from '../../prisma/db';
 import app from '../../server/app';
 import type { authRequest } from '../../types/express';
 import { NextFunction } from 'express';
+import { unknown } from 'zod';
 
 //mock middleware
 jest.mock('../../middleware/authMiddleware', () => ({
@@ -38,7 +39,7 @@ jest.mock('../../prisma/db', () => ({
     },
   },
 }));
-// /api/webhook/request/:id
+
 const mockEndpointGet = jest.spyOn(db.orm.public.WebhookEndpoint, 'where');
 
 const mockCreate = jest.spyOn(db.orm.public.WebhookRequest, 'create');
@@ -439,5 +440,341 @@ describe('Clear all requests', () => {
       .delete('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/')
       .expect(500);
     expect(response.body.error).toEqual('Failed to delete Requests');
+  });
+});
+
+describe('GET /requests', () => {
+  it('confirms pagination is set without filters', async () => {
+    const mockEndpoint = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: 'user-1',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+    };
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof mockEndpoint>>().mockResolvedValue(mockEndpoint),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet
+      .mockReturnValueOnce({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            offset: jest.fn().mockReturnValue({
+              all: jest
+                .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+                .mockResolvedValue([mockWebhookRequest]),
+            }),
+          }),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        all: jest
+          .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+          .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10')
+      .expect(200);
+
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        page: 10,
+        total: 100,
+        limit: 10,
+        totalPages: 10,
+      }),
+    );
+  });
+
+  it('confirms DB call receives the correct where conditions', async () => {
+    const mockEndpoint = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: 'user-1',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+    };
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof mockEndpoint>>().mockResolvedValue(mockEndpoint),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet
+      .mockReturnValueOnce({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            offset: jest.fn().mockReturnValue({
+              all: jest
+                .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+                .mockResolvedValue([mockWebhookRequest]),
+            }),
+          }),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        all: jest
+          .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+          .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    await request(app)
+      .get(
+        '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests' +
+          '?method=POST' +
+          '&from=2026-09-01' +
+          '&to=2026-09-30',
+      )
+      .expect(200);
+    expect(mockGet).toHaveBeenCalledWith({
+      endpointId: mockEndpoint.id,
+      method: 'POST',
+      receivedAt: {
+        gte: expect.any(Date),
+        lte: expect.any(Date),
+      },
+    });
+  });
+
+  it('confirms the DB call receives the correct search term', async () => {
+    const mockEndpoint = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: 'user-1',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'test.push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+    };
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof mockEndpoint>>().mockResolvedValue(mockEndpoint),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet.mockReturnValueOnce({
+      orderBy: jest.fn().mockReturnValue({
+        all: jest
+          .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+          .mockResolvedValue([mockWebhookRequest]),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?search=push')
+      .expect(200);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.data[0]).toEqual({
+      ...mockWebhookRequest,
+      receivedAt: mockWebhookRequest.receivedAt.toISOString(),
+    });
+  });
+
+  it('returns an empty array if requesting more pages than the available results', async () => {
+    const mockEndpoint = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: 'user-1',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+    };
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof mockEndpoint>>().mockResolvedValue(mockEndpoint),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet
+      .mockReturnValueOnce({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            offset: jest.fn().mockReturnValue({
+              all: jest.fn<() => Promise<(typeof mockWebhookRequest)[]>>().mockResolvedValue([]),
+            }),
+          }),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        all: jest
+          .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+          .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=100&limit=10')
+      .expect(200);
+
+    expect(response.body.data).toEqual([]);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        page: 100,
+        total: 100,
+        limit: 10,
+        totalPages: 10,
+      }),
+    );
+  });
+
+  it('returns 400 if pagination params are invalid', async () => {
+    const mockEndpoint = {
+      id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      userId: 'user-1',
+      name: 'Stripe test endpoint',
+      slug: 'a1b2c3d4e5',
+      isActive: true,
+      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+    };
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+    };
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof mockEndpoint>>().mockResolvedValue(mockEndpoint),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet
+      .mockReturnValueOnce({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            offset: jest.fn().mockReturnValue({
+              all: jest.fn<() => Promise<(typeof mockWebhookRequest)[]>>().mockResolvedValue([]),
+            }),
+          }),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        all: jest
+          .fn<() => Promise<(typeof mockWebhookRequest)[]>>()
+          .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get(
+        '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=malformed&limit=-10',
+      )
+      .expect(400);
+
+    expect(response.body.error).toEqual('Validation failed');
+  });
+
+  it('returns 404 if endpoint is not found', async () => {
+    mockEndpointGet.mockReset();
+
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app).get(
+      '/api/webhook/endpoints/00000000-0000-0000-0000-000000000000/requests?page=10&limit=10',
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toEqual('No endpoint found');
+  });
+
+  it('catches errors and returns 500', async () => {
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest
+        .fn<() => Promise<typeof unknown>>()
+        .mockRejectedValue(new Error('Error getting requests')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+    mockGet
+      .mockReturnValueOnce({
+        orderBy: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            offset: jest.fn().mockReturnValue({
+              all: jest
+                .fn<() => Promise<typeof unknown>>()
+                .mockRejectedValue(new Error('Error getting requests')),
+            }),
+          }),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        all: jest
+          .fn<() => Promise<(typeof unknown)[]>>()
+          .mockRejectedValue(new Error('Error getting requests')),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10')
+      .expect(500);
+
+    expect(response.body.error).toEqual('Error getting requests');
   });
 });

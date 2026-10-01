@@ -51,10 +51,10 @@ export const getRequests = async (req: authRequest, res: Response) => {
         details: validatedQuery.error.issues,
       });
     }
-    const id = req.params.id;
+    const id = idSchema.safeParse(req.params.id);
     const userId = req.userId;
 
-    if (!id || typeof id !== 'string') {
+    if (!id.success) {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
       });
@@ -66,12 +66,12 @@ export const getRequests = async (req: authRequest, res: Response) => {
     }
 
     const endpoint = await db.orm.public.WebhookEndpoint.where({
-      id,
+      id: id.data,
       userId,
     }).first();
 
     if (!endpoint) {
-      return res.status(404).json({ error: 'No endpoint found.' });
+      return res.status(404).json({ error: 'No endpoint found' });
     }
 
     const offset = (page - 1) * limit;
@@ -138,17 +138,17 @@ export const getRequests = async (req: authRequest, res: Response) => {
       totalPages,
     });
   } catch (error) {
-    console.error(error);
+      console.error(error);
     return res.status(500).json({ error: 'Error getting requests' });
   }
 };
 
 export const getSingleRequest = async (req: authRequest, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = idSchema.safeParse(req.params.id);
     const userId = req.userId;
 
-    if (!id || typeof id !== 'string') {
+    if (!id.success) {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
       });
@@ -158,7 +158,7 @@ export const getSingleRequest = async (req: authRequest, res: Response) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const webhookRequest = await db.orm.public.WebhookRequest.where({ id })
+    const webhookRequest = await db.orm.public.WebhookRequest.where({ id: id.data })
       .include('endpoint')
       .first();
 
