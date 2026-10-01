@@ -226,6 +226,21 @@ describe('POST/ request', () => {
       }),
     );
   });
+
+  it('catches errors and returns 500', async () => {
+    mockCreate.mockRejectedValue(new Error('Failed to create WebhookRequest'));
+
+    const response = await request(app)
+      .post('/webhook/a1b2c3d4e5')
+      .send({
+        event: 'push',
+        amount: 100,
+      })
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toEqual('Failed to create webhook request');
+  });
 });
 
 describe('DELETE /requests', () => {
@@ -321,6 +336,18 @@ describe('DELETE /requests', () => {
       .delete('/api/webhook/request/00000000-0000-0000-0000-000000000000')
       .expect(404);
     expect(response.body.error).toEqual('Request not found');
+  });
+  it('catches errors and returns 500', async () => {
+    mockGet.mockReturnValueOnce({
+      delete: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Failed to delete Request')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/request/bc046aa3-f949-408c-bd7f-f77ad214eb99')
+      .expect(500);
+    expect(response.body.error).toEqual('Failed to delete Request');
   });
 });
 
