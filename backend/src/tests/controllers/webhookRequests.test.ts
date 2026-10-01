@@ -1,7 +1,17 @@
 import request from 'supertest';
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { db } from '../../prisma/db';
 import app from '../../server/app';
+import type { authRequest } from '../../types/express';
+import { NextFunction } from 'express';
+
+//mock middleware
+jest.mock('../../middleware/authMiddleware', () => ({
+  authMiddleware: (req: authRequest, res: Response, next: NextFunction) => {
+    req.userId = 'user-1';
+    next();
+  },
+}));
 
 //io mock
 jest.mock('../../lib/socket', () => ({
@@ -28,10 +38,15 @@ jest.mock('../../prisma/db', () => ({
     },
   },
 }));
-
+// /api/webhook/request/:id
 const mockEndpointGet = jest.spyOn(db.orm.public.WebhookEndpoint, 'where');
 
 const mockCreate = jest.spyOn(db.orm.public.WebhookRequest, 'create');
+const mockGet = jest.spyOn(db.orm.public.WebhookRequest, 'where');
+
+beforeEach(() => {
+  mockGet.mockReset();
+});
 
 describe('POST/ request', () => {
   it('returns 200 if endpoint is valid', async () => {
@@ -210,5 +225,101 @@ describe('POST/ request', () => {
         statusCode: 200,
       }),
     );
+  });
+});
+
+describe('DELETE /requests', () => {
+  it('returns 204 if request is valid', async () => {
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet
+      .mockReturnValueOnce({
+        include: jest.fn().mockReturnValue({
+          first: jest
+            .fn<() => Promise<typeof mockWebhookRequest>>()
+            .mockResolvedValue(mockWebhookRequest),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        delete: jest
+          .fn<() => Promise<typeof mockWebhookRequest>>()
+          .mockResolvedValue(mockWebhookRequest),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    await request(app)
+      .delete('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
+      .expect(204);
+  });
+
+  it('returns 400 if request id is invalid', async () => {
+    const mockWebhookRequest = {
+      id: 'no-id-value',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet
+      .mockReturnValueOnce({
+        include: jest.fn().mockReturnValue({
+          first: jest
+            .fn<() => Promise<typeof mockWebhookRequest>>()
+            .mockResolvedValue(mockWebhookRequest),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        delete: jest
+          .fn<() => Promise<typeof mockWebhookRequest>>()
+          .mockResolvedValue(mockWebhookRequest),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app).delete('/api/webhook/request/no-id-value').expect(400);
+    expect(response.body.error).toEqual('Invalid endpoint ID');
+  });
+
+  it('returns 404 if request does not exist', async () => {
+    mockGet
+      .mockReturnValueOnce({
+        include: jest.fn().mockReturnValue({
+          first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+        }),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
+      .mockReturnValueOnce({
+        delete: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+      } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/request/00000000-0000-0000-0000-000000000000')
+      .expect(404);
+    expect(response.body.error).toEqual('Request not found');
   });
 });

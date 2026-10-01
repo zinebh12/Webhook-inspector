@@ -1,7 +1,7 @@
 import type { authRequest } from '../types/express';
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
-import { requestQuerySchema, slugSchema } from '../schemas/requests.schema';
+import { requestQuerySchema, slugSchema, idSchema } from '../schemas/requests.schema';
 import { getIo } from '../lib/socket';
 import { sanitizeHeaders } from '../helpers/removeHeaders.helper';
 
@@ -175,10 +175,10 @@ export const getSingleRequest = async (req: authRequest, res: Response) => {
 
 export const deleteRequest = async (req: authRequest, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = idSchema.safeParse(req.params.id);
     const userId = req.userId;
 
-    if (!id || typeof id !== 'string') {
+    if (!id.success) {
       return res.status(400).json({
         error: 'Invalid endpoint ID',
       });
@@ -188,17 +188,17 @@ export const deleteRequest = async (req: authRequest, res: Response) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const webhookRequest = await db.orm.public.WebhookRequest.where({ id })
+    const webhookRequest = await db.orm.public.WebhookRequest.where({ id: id.data })
       .include('endpoint')
       .first();
 
     if (!webhookRequest || webhookRequest.endpoint.userId !== req.userId) {
-      return res.status(404).json({ error: 'Request not found.' });
+      return res.status(404).json({ error: 'Request not found' });
     }
 
-    await db.orm.public.WebhookRequest.where({ id }).delete();
+    await db.orm.public.WebhookRequest.where({ id: id.data }).delete();
 
-    return res.status(200).json({ message: 'Successfully deleted request' });
+    return res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).json({
