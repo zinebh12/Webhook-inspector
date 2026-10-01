@@ -323,3 +323,94 @@ describe('DELETE /requests', () => {
     expect(response.body.error).toEqual('Request not found');
   });
 });
+
+describe('Clear all requests', () => {
+  it('returns 200 if requests are cleared', async () => {
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet.mockReturnValueOnce({
+      deleteAndCount: jest
+        .fn<() => Promise<typeof mockWebhookRequest>>()
+        .mockResolvedValue(mockWebhookRequest),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/')
+      .expect(200);
+    expect(response.body.message).toEqual(`cleared [object Object] requests`);
+  });
+
+  it('returns 400 if request id is invalid', async () => {
+    const mockWebhookRequest = {
+      id: 'no-id-value',
+      endpointId: 'no-id-value',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub-Hookshot/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet.mockReturnValueOnce({
+      deleteAndCount: jest
+        .fn<() => Promise<typeof mockWebhookRequest>>()
+        .mockResolvedValue(mockWebhookRequest),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/endpoints/no-id-value/requests/')
+      .expect(400);
+    expect(response.body.error).toEqual('Invalid endpoint ID');
+  });
+
+  it('returns 404 if endpoint does not exist', async () => {
+    mockEndpointGet.mockReturnValueOnce({
+      first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/endpoints/00000000-0000-0000-0000-000000000000/requests/')
+      .expect(404);
+
+    expect(response.body.error).toEqual('Endpoint not found');
+  });
+
+  it('catches errors and returns 500', async () => {
+    mockGet.mockReturnValueOnce({
+      deleteAndCount: jest
+        .fn<() => Promise<void>>()
+        .mockRejectedValue(new Error('Failed to delete Requests')),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .delete('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/')
+      .expect(500);
+    expect(response.body.error).toEqual('Failed to delete Requests');
+  });
+});
