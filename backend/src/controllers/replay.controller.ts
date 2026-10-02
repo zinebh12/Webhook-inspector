@@ -1,24 +1,25 @@
 import type { Request, Response } from 'express';
 import { replayService } from '../service/replayService';
-import { replaySchema } from '../schemas/replay.schema';
+import { urlSchema, idSchema } from '../schemas/replay.schema';
 
 export const setUpReplay = async (req: Request, res: Response) => {
   try {
-    const validatedQuery = replaySchema.safeParse(req.body);
-    if (!validatedQuery.success) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: validatedQuery.error.issues,
-      });
-    }
-    const { url } = validatedQuery.data;
-    const id = req.params.id;
+    const validatedUrl = urlSchema.safeParse(req.body.url);
+    const validatedId = idSchema.safeParse(req.params.id);
 
-    if (id && typeof id !== 'string') {
+    if (!validatedUrl.success) {
       return res.status(400).json({
-        error: 'Invalid request ID',
+        error: 'Invalid url',
+        details: validatedUrl.error.issues,
       });
     }
+
+    if (!validatedId.success) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
+    const url = validatedUrl.data;
+    const id = validatedId.data;
 
     const result = await replayService(id, url);
 

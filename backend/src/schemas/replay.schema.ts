@@ -1,5 +1,5 @@
 import z from 'zod';
 
-export const replaySchema = z.object({
-  url: z.url(),
-});
+export const urlSchema = z.url();
+
+export const idSchema = z.uuid();
