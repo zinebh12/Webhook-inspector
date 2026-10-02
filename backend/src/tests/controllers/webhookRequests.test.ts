@@ -65,7 +65,7 @@ describe('POST/ request', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -142,7 +142,7 @@ describe('POST/ request', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -252,7 +252,7 @@ describe('DELETE /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -291,7 +291,7 @@ describe('DELETE /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -360,7 +360,7 @@ describe('Clear all requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -392,7 +392,7 @@ describe('Clear all requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -459,7 +459,7 @@ describe('GET /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -521,7 +521,7 @@ describe('GET /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -586,7 +586,7 @@ describe('GET /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'test.push',
@@ -633,7 +633,7 @@ describe('GET /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -693,7 +693,7 @@ describe('GET /requests', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'user-agent': 'GitHub-Hookshot/test',
+        'user-agent': 'GitHub/test',
       },
       body: {
         event: 'push',
@@ -776,5 +776,121 @@ describe('GET /requests', () => {
       .expect(500);
 
     expect(response.body.error).toEqual('Error getting requests');
+  });
+});
+
+describe('GET /request/:id', () => {
+  it('returns 400 for invalid id format', async () => {
+    const mockWebhookRequest = {
+      id: 'no-id-value',
+      endpointId: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'user-agent': 'GitHub/test',
+      },
+      body: {
+        event: 'push',
+        amount: 100,
+      },
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet.mockReturnValueOnce({
+      include: jest.fn().mockReturnValue({
+        first: jest
+          .fn<() => Promise<typeof mockWebhookRequest>>()
+          .mockResolvedValue(mockWebhookRequest),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app).get('/api/webhook/request/no-id-value').expect(400);
+    expect(response.body.error).toEqual('Invalid endpoint ID');
+  });
+  it('returns 404 if request does not exist', async () => {
+    mockGet.mockReturnValueOnce({
+      include: jest.fn().mockReturnValue({
+        first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
+      .expect(404);
+    expect(response.body.error).toEqual('Request not found');
+  });
+
+  it('returns 404 if request does not belong to user', async () => {
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: '00000000-0000-0000-0000-000000000001',
+      method: 'POST',
+      headers: {},
+      body: {},
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'different-user',
+      },
+    };
+    mockGet.mockReturnValueOnce({
+      include: jest.fn().mockReturnValue({
+        first: jest
+          .fn<() => Promise<typeof mockWebhookRequest>>()
+          .mockResolvedValue(mockWebhookRequest),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
+      .expect(404);
+
+    expect(response.body.error).toEqual('Request not found');
+  });
+
+  it('returns 200 for successful request', async () => {
+    const mockWebhookRequest = {
+      id: '8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+      endpointId: '00000000-0000-0000-0000-000000000001',
+      method: 'POST',
+      headers: {},
+      body: {},
+      query: {},
+      statusCode: 200,
+      receivedAt: new Date('2026-09-29T19:00:00.000Z'),
+      endpoint: {
+        userId: 'user-1',
+      },
+    };
+    mockGet.mockReturnValueOnce({
+      include: jest.fn().mockReturnValue({
+        first: jest
+          .fn<() => Promise<typeof mockWebhookRequest>>()
+          .mockResolvedValue(mockWebhookRequest),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    await request(app).get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27').expect(200);
+  });
+
+  it('catches errors and returns 500', async () => {
+    mockGet.mockReturnValueOnce({
+      include: jest.fn().mockReturnValue({
+        first: jest
+          .fn<() => Promise<typeof Error>>()
+          .mockRejectedValue(new Error('Error getting request')),
+      }),
+    } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
+
+    const response = await request(app)
+      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
+      .expect(500);
+
+    expect(response.body.error).toEqual('Error getting request');
   });
 });

@@ -163,7 +163,7 @@ export const getSingleRequest = async (req: authRequest, res: Response) => {
       .first();
 
     if (!webhookRequest || webhookRequest.endpoint.userId !== req.userId) {
-      return res.status(404).json({ error: 'Request not found.' });
+      return res.status(404).json({ error: 'Request not found' });
     }
 
     return res.status(200).json(webhookRequest);
