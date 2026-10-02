@@ -4,7 +4,6 @@ import { db } from '../../prisma/db';
 import app from '../../server/app';
 import type { authRequest } from '../../types/express';
 import { NextFunction } from 'express';
-import { unknown } from 'zod';
 
 //mock middleware
 jest.mock('../../middleware/authMiddleware', () => ({
@@ -338,6 +337,7 @@ describe('DELETE /requests', () => {
       .expect(404);
     expect(response.body.error).toEqual('Request not found');
   });
+
   it('catches errors and returns 500', async () => {
     mockGet.mockReturnValueOnce({
       delete: jest
@@ -750,7 +750,7 @@ describe('GET /requests', () => {
   it('catches errors and returns 500', async () => {
     mockEndpointGet.mockReturnValueOnce({
       first: jest
-        .fn<() => Promise<typeof unknown>>()
+        .fn<() => Promise<typeof Error>>()
         .mockRejectedValue(new Error('Error getting requests')),
     } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
     mockGet
@@ -759,7 +759,7 @@ describe('GET /requests', () => {
           limit: jest.fn().mockReturnValue({
             offset: jest.fn().mockReturnValue({
               all: jest
-                .fn<() => Promise<typeof unknown>>()
+                .fn<() => Promise<typeof Error>>()
                 .mockRejectedValue(new Error('Error getting requests')),
             }),
           }),
@@ -767,7 +767,7 @@ describe('GET /requests', () => {
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>)
       .mockReturnValueOnce({
         all: jest
-          .fn<() => Promise<(typeof unknown)[]>>()
+          .fn<() => Promise<typeof Error>>()
           .mockRejectedValue(new Error('Error getting requests')),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
