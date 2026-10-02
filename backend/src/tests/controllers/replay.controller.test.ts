@@ -5,7 +5,7 @@ import app from '../../server/app';
 import request from 'supertest';
 import type { authRequest } from '../../types/express';
 import { NextFunction } from 'express';
-import { replayService } from '../../service/replayService';
+import { replayService } from '../../service/replay.service';
 
 //mock middleware
 jest.mock('../../middleware/authMiddleware', () => ({

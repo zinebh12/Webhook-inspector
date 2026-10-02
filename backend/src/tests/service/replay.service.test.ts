@@ -2,7 +2,7 @@
 import { reconstruct } from '../../helpers/reconstructRequest.helper';
 import { send } from '../../helpers/sendReplayRequest.helper';
 import { record } from '../../helpers/recordReplayResult.helper';
-import { replayService } from '../../service/replayService';
+import { replayService } from '../../service/replay.service';
 import { describe, expect, it, jest } from '@jest/globals';
 import type { SendResult } from '../../types/express';
 
