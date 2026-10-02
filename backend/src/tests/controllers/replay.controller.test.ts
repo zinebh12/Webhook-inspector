@@ -29,7 +29,7 @@ jest.mock('../../prisma/db', () => ({
   db: {},
 }));
 
-jest.mock('../../service/replayService', () => ({
+jest.mock('../../service/replay.service', () => ({
   replayService: jest.fn(),
 }));
 
