@@ -11,7 +11,6 @@ jest.mock('argon2', () => ({
 import type { authRequest } from '../../types/express';
 import type { Response, NextFunction } from 'express';
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { db } from '../../prisma/db';
 import app from '../../server/app';
@@ -239,5 +238,42 @@ describe('login auth', () => {
     expect(response.status).toBe(500);
 
     expect(response.body.error).toEqual('Failed to login');
+  });
+});
+
+describe('get current user', () => {
+  it('returns 401 if user does not exist in database', async () => {
+    mockGet.mockReturnValue({
+      first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof db.orm.public.User.where>);
+
+    const response = await request(app).get('/api/auth/user');
+    expect(response.status).toBe(401);
+    expect(response.body.error).toEqual('User not found');
+  });
+
+  it('returns 200 if user successfully logs in', async () => {
+    const id = '59432-3335y4f4h3f2t-4f423234h-65433v2';
+
+    mockGet.mockReturnValue({
+      first: jest.fn<() => Promise<typeof id>>().mockResolvedValue(id),
+    } as unknown as ReturnType<typeof db.orm.public.User.where>);
+
+    const response = await request(app).get('/api/auth/user');
+
+    expect(response.status).toBe(200);
+  });
+
+  it('catches errors and returns 500', async () => {
+    mockGet.mockReturnValue({
+      first: jest
+        .fn<() => Promise<typeof undefined>>()
+        .mockRejectedValue(new Error('Failed to get current user')),
+    } as unknown as ReturnType<typeof db.orm.public.User.where>);
+
+    const response = await request(app).get('/api/auth/user');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toEqual('Failed to get current user');
   });
 });
