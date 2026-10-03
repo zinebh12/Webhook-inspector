@@ -6,7 +6,7 @@ import type { authRequest } from '../../types/express';
 import { NextFunction } from 'express';
 
 //mock middleware
-jest.mock('../../middleware/authMiddleware', () => ({
+jest.mock('../../middleware/auth.middleware', () => ({
   authMiddleware: (req: authRequest, res: Response, next: NextFunction) => {
     req.userId = 'user-1';
     next();

@@ -17,7 +17,7 @@ import app from '../../server/app';
 import argon2 from 'argon2';
 
 //mock middleware
-jest.mock('../../middleware/authMiddleware', () => ({
+jest.mock('../../middleware/auth.middleware', () => ({
   authMiddleware: (req: authRequest, res: Response, next: NextFunction) => {
     req.userId = 'user-1';
     next();

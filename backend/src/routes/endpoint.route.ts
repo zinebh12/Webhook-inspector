@@ -7,7 +7,7 @@ import {
   toggleEndpointActivity,
 } from '../controllers/endpoints.controller';
 import { getRequests, clearRequests } from '../controllers/webhookRequests.controller';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
