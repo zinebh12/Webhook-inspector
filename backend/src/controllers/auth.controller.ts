@@ -37,11 +37,11 @@ export const registerAuth = async (req: authRequest, res: Response) => {
 };
 
 export const loginAuth = async (req: authRequest, res: Response) => {
-  const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) {
-    throw new Error('JWT_SECRET is not set');
-  }
   try {
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      throw new Error('JWT_SECRET is not set');
+    }
     const validatedData = loginSchema.safeParse(req.body);
     if (!validatedData.success) {
       return res.status(400).json({

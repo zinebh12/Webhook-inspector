@@ -4,7 +4,7 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["node"],
+    "types": ["node", "jest"],
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
