@@ -1,35 +1,15 @@
 import express, { NextFunction, type Express, type Request, type Response } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import authRoute from '../routes/auth.route';
 import endpointRoutes from '../routes/endpoint.route';
 import webhookRequestsRoutes from '../routes/webhookRequests.route';
 import webhookReceiverRoute from '../routes/webhookReceiver.route';
 import replayRoute from '../routes/replay.route';
+import { limiter, replayLimiter } from '../middleware/rateLimiter.middleware';
 
 dotenv.config();
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 100,
-  standardHeaders: 'draft-8',
-  legacyHeaders: false,
-  ipv6Subnet: 56,
-  message: { error: 'Too many requests, please try again later.' },
-  skip: () => process.env.NODE_ENV === 'test',
-});
-
-const replayLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 5,
-  standardHeaders: 'draft-8',
-  legacyHeaders: false,
-  ipv6Subnet: 56,
-  message: { error: 'Too many replay attempts, please try again later.' },
-  skip: () => process.env.NODE_ENV === 'test',
-});
 
 const app: Express = express();
 app.set('trust proxy', true);
@@ -79,6 +59,5 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
   }
   next(error);
 });
-
 
 export default app;
