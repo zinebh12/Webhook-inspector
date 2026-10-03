@@ -277,3 +277,17 @@ describe('get current user', () => {
     expect(response.body.error).toEqual('Failed to get current user');
   });
 });
+
+describe('logout', () => {
+  it('confirms res.clearCookie was called with token', async () => {
+    const response = await request(app).post('/api/auth/logout');
+
+    expect(response.body.message).toEqual('Log out successful!');
+
+    expect(response.headers['set-cookie'][0]).toContain('token=');
+    expect(response.headers['set-cookie'][0]).toContain('Expires=');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+    expect(response.headers['set-cookie'][0]).toContain('SameSite=Lax');
+  });
+});
