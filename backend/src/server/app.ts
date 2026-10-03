@@ -1,4 +1,4 @@
-import express, { type Express, type Request, type Response } from 'express';
+import express, { NextFunction, type Express, type Request, type Response } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
@@ -32,7 +32,6 @@ const replayLimiter = rateLimit({
 });
 
 const app: Express = express();
-
 app.set('trust proxy', true);
 
 app.use(express.json({ limit: '100kb' }));
@@ -73,5 +72,13 @@ app.use('/webhook', replayLimiter, replayRoute);
 app.get('/api/health', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
+
+app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
+  if (error.message === 'Not allowed by CORS') {
+    return response.status(403).json({ error: 'Not allowed by CORS' });
+  }
+  next(error);
+});
+
 
 export default app;
