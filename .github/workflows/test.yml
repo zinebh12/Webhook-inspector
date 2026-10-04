@@ -6,6 +6,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest # Use the latest Ubuntu runner
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
