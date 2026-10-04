@@ -8,12 +8,15 @@ jobs:
     runs-on: ubuntu-latest # Use the latest Ubuntu runner
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '26' # Match your local Node version
+          node-version: "26" # Match your local Node version
       - name: Install Dependencies
         run: npm install
       - name: Run Tests
         run: npm test
+        env:
+          JWT_SECRET: test-secret-for-ci
+          NODE_ENV: test
