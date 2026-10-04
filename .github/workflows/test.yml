@@ -22,5 +22,5 @@ jobs:
         run: npm test
         env:
           JWT_SECRET: test-secret-for-ci
-          APP_URL: http://localhost:3000
+          BASE_URL: http://localhost:3000
           NODE_ENV: test
