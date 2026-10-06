@@ -1,28 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { describe, it, expect, jest } from '@jest/globals';
 import app from '../../server/app';
 import request from 'supertest';
-import type { authRequest } from '../../types/express';
-import { NextFunction } from 'express';
 import { replayService } from '../../service/replay.service';
-
-//mock middleware
-jest.mock('../../middleware/auth.middleware', () => ({
-  authMiddleware: (req: authRequest, res: Response, next: NextFunction) => {
-    req.userId = 'user-1';
-    next();
-  },
-}));
-
-//io mock
-jest.mock('../../lib/socket', () => ({
-  getIo: jest.fn(() => ({
-    to: jest.fn(() => ({
-      emit: jest.fn(),
-    })),
-  })),
-}));
 
 //db mock
 jest.mock('../../prisma/db', () => ({
@@ -35,7 +15,6 @@ jest.mock('../../service/replay.service', () => ({
 
 const replayServiceMock = replayService as jest.Mock<(...args: any[]) => any>;
 
-/// /webhook:id/replay
 describe('replay', () => {
   it('returns 200 with the service result when successful', async () => {
     const mockResult = { success: true, statusCode: 200, responseTime: 120 };
