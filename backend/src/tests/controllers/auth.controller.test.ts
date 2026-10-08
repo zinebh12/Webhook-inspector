@@ -58,8 +58,8 @@ describe('register auth', () => {
     };
 
     const response = await request(app).post('/api/auth/register').send(mockData);
-    expect(400);
 
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Validation failed');
   });
 
@@ -74,8 +74,8 @@ describe('register auth', () => {
     } as unknown as ReturnType<typeof db.orm.public.User.where>);
 
     const response = await request(app).post('/api/auth/register').send(mockData);
-    expect(400);
 
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('User already exists');
   });
 
@@ -96,7 +96,6 @@ describe('register auth', () => {
     } as unknown as Awaited<ReturnType<typeof db.orm.public.User.create>>);
 
     const response = await request(app).post('/api/auth/register').send(mockData);
-    expect(201);
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual({ message: 'User registered successfully' });
@@ -114,7 +113,7 @@ describe('register auth', () => {
 
     mockCreate.mockRejectedValue(new Error('Failed to register user'));
 
-    const response = await request(app).post('/api/auth/register').send(mockData).expect(500);
+    const response = await request(app).post('/api/auth/register').send(mockData);
 
     expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Failed to register user');

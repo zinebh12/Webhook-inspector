@@ -23,8 +23,7 @@ describe('replay', () => {
 
     const response = await request(app)
       .post('/webhook/bc046aa3-f949-408c-bd7f-f77ad214eb99/replay')
-      .send({ url: 'https://example.com' })
-      .expect(200);
+      .send({ url: 'https://example.com' });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockResult);
@@ -33,9 +32,9 @@ describe('replay', () => {
   it('returns 400 for an invalid url', async () => {
     const response = await request(app)
       .post('/webhook/bc046aa3-f949-408c-bd7f-f77ad214eb99/replay')
-      .send({ url: 'invalid-url' })
-      .expect(400);
+      .send({ url: 'invalid-url' });
 
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Invalid url');
   });
 
@@ -44,9 +43,9 @@ describe('replay', () => {
 
     const response = await request(app)
       .post('/webhook/bc046aa3-f949-408c-bd7f-f77ad214eb99/replay')
-      .send({ url: 'https://example.com' })
-      .expect(500);
+      .send({ url: 'https://example.com' });
 
+    expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Replay failed');
   });
 });

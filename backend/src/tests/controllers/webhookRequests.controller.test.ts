@@ -278,9 +278,11 @@ describe('DELETE /requests', () => {
           .mockResolvedValue(mockWebhookRequest),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    await request(app)
-      .delete('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
-      .expect(204);
+    const response = await request(app).delete(
+      '/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+    );
+
+    expect(response.status).toBe(204);
   });
 
   it('returns 400 if request id is invalid', async () => {
@@ -317,7 +319,9 @@ describe('DELETE /requests', () => {
           .mockResolvedValue(mockWebhookRequest),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app).delete('/api/webhook/request/no-id-value').expect(400);
+    const response = await request(app).delete('/api/webhook/request/no-id-value');
+
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Invalid endpoint ID');
   });
 
@@ -332,9 +336,11 @@ describe('DELETE /requests', () => {
         delete: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/request/00000000-0000-0000-0000-000000000000')
-      .expect(404);
+    const response = await request(app).delete(
+      '/api/webhook/request/00000000-0000-0000-0000-000000000000',
+    );
+
+    expect(response.status).toBe(404);
     expect(response.body.error).toEqual('Request not found');
   });
 
@@ -345,9 +351,11 @@ describe('DELETE /requests', () => {
         .mockRejectedValue(new Error('Failed to delete Request')),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/request/bc046aa3-f949-408c-bd7f-f77ad214eb99')
-      .expect(500);
+    const response = await request(app).delete(
+      '/api/webhook/request/bc046aa3-f949-408c-bd7f-f77ad214eb99',
+    );
+
+    expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Failed to delete Request');
   });
 });
@@ -379,9 +387,11 @@ describe('Clear all requests', () => {
         .mockResolvedValue(mockWebhookRequest),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/')
-      .expect(200);
+    const response = await request(app).delete(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/',
+    );
+
+    expect(response.status).toBe(200);
     expect(response.body.message).toEqual(`cleared [object Object] requests`);
   });
 
@@ -411,9 +421,9 @@ describe('Clear all requests', () => {
         .mockResolvedValue(mockWebhookRequest),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/endpoints/no-id-value/requests/')
-      .expect(400);
+    const response = await request(app).delete('/api/webhook/endpoints/no-id-value/requests/');
+
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Invalid endpoint ID');
   });
 
@@ -422,10 +432,11 @@ describe('Clear all requests', () => {
       first: jest.fn<() => Promise<typeof undefined>>().mockResolvedValue(undefined),
     } as unknown as ReturnType<typeof db.orm.public.WebhookEndpoint.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/endpoints/00000000-0000-0000-0000-000000000000/requests/')
-      .expect(404);
+    const response = await request(app).delete(
+      '/api/webhook/endpoints/00000000-0000-0000-0000-000000000000/requests/',
+    );
 
+    expect(response.status).toBe(404);
     expect(response.body.error).toEqual('Endpoint not found');
   });
 
@@ -436,15 +447,17 @@ describe('Clear all requests', () => {
         .mockRejectedValue(new Error('Failed to delete Requests')),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .delete('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/')
-      .expect(500);
+    const response = await request(app).delete(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests/',
+    );
+
+    expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Failed to delete Requests');
   });
 });
 
 describe('GET /requests', () => {
-  it('confirms pagination is set without filters', async () => {
+  it('returns 200 when pagination is set without filters', async () => {
     const mockEndpoint = {
       id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
       userId: 'user-1',
@@ -491,10 +504,11 @@ describe('GET /requests', () => {
           .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10')
-      .expect(200);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10',
+    );
 
+    expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
     expect(response.body).toEqual(
       expect.objectContaining({
@@ -506,7 +520,7 @@ describe('GET /requests', () => {
     );
   });
 
-  it('confirms DB call receives the correct where conditions', async () => {
+  it('returns 200 when DB call receives the correct where conditions', async () => {
     const mockEndpoint = {
       id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
       userId: 'user-1',
@@ -553,14 +567,14 @@ describe('GET /requests', () => {
           .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    await request(app)
-      .get(
-        '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests' +
-          '?method=POST' +
-          '&from=2026-09-01' +
-          '&to=2026-09-30',
-      )
-      .expect(200);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests' +
+        '?method=POST' +
+        '&from=2026-09-01' +
+        '&to=2026-09-30',
+    );
+
+    expect(response.status).toBe(200);
     expect(mockGet).toHaveBeenCalledWith({
       endpointId: mockEndpoint.id,
       method: 'POST',
@@ -571,7 +585,7 @@ describe('GET /requests', () => {
     });
   });
 
-  it('confirms the DB call receives the correct search term', async () => {
+  it('returns 200 when the DB call receives the correct search term', async () => {
     const mockEndpoint = {
       id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
       userId: 'user-1',
@@ -608,9 +622,11 @@ describe('GET /requests', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?search=push')
-      .expect(200);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?search=push',
+    );
+
+    expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
     expect(response.body.data[0]).toEqual({
       ...mockWebhookRequest,
@@ -618,7 +634,7 @@ describe('GET /requests', () => {
     });
   });
 
-  it('returns an empty array if requesting more pages than the available results', async () => {
+  it('returns 200 for an empty array if requesting more pages than the available results', async () => {
     const mockEndpoint = {
       id: 'bc046aa3-f949-408c-bd7f-f77ad214eb99',
       userId: 'user-1',
@@ -663,10 +679,11 @@ describe('GET /requests', () => {
           .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=100&limit=10')
-      .expect(200);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=100&limit=10',
+    );
 
+    expect(response.status).toBe(200);
     expect(response.body.data).toEqual([]);
     expect(response.body).toEqual(
       expect.objectContaining({
@@ -723,12 +740,11 @@ describe('GET /requests', () => {
           .mockResolvedValue(Array.from({ length: 100 }, () => mockWebhookRequest)),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get(
-        '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=malformed&limit=-10',
-      )
-      .expect(400);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=malformed&limit=-10',
+    );
 
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Validation failed');
   });
 
@@ -771,10 +787,11 @@ describe('GET /requests', () => {
           .mockRejectedValue(new Error('Error getting requests')),
       } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10')
-      .expect(500);
+    const response = await request(app).get(
+      '/api/webhook/endpoints/bc046aa3-f949-408c-bd7f-f77ad214eb99/requests?page=10&limit=10',
+    );
 
+    expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Error getting requests');
   });
 });
@@ -808,7 +825,9 @@ describe('GET /request/:id', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app).get('/api/webhook/request/no-id-value').expect(400);
+    const response = await request(app).get('/api/webhook/request/no-id-value');
+
+    expect(response.status).toBe(400);
     expect(response.body.error).toEqual('Invalid endpoint ID');
   });
   it('returns 404 if request does not exist', async () => {
@@ -818,9 +837,11 @@ describe('GET /request/:id', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
-      .expect(404);
+    const response = await request(app).get(
+      '/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+    );
+
+    expect(response.status).toBe(404);
     expect(response.body.error).toEqual('Request not found');
   });
 
@@ -846,10 +867,11 @@ describe('GET /request/:id', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
-      .expect(404);
+    const response = await request(app).get(
+      '/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+    );
 
+    expect(response.status).toBe(404);
     expect(response.body.error).toEqual('Request not found');
   });
 
@@ -875,7 +897,11 @@ describe('GET /request/:id', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    await request(app).get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27').expect(200);
+    const response = await request(app).get(
+      '/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+    );
+
+    expect(response.status).toBe(200);
   });
 
   it('catches errors and returns 500', async () => {
@@ -887,10 +913,11 @@ describe('GET /request/:id', () => {
       }),
     } as unknown as ReturnType<typeof db.orm.public.WebhookRequest.where>);
 
-    const response = await request(app)
-      .get('/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27')
-      .expect(500);
+    const response = await request(app).get(
+      '/api/webhook/request/8f3c2a91-7d64-4b12-9e35-1a6f0c8d4b27',
+    );
 
+    expect(response.status).toBe(500);
     expect(response.body.error).toEqual('Error getting request');
   });
 });
