@@ -12,7 +12,7 @@ jest.mock('../../prisma/db', () => ({
 
 describe('cors', () => {
   it('returns 200 for allowed origin', async () => {
-    const url = 'http://localhost:5173';
+    const url = 'http://localhost:3000';
 
     const response = await request(app).get('/api/health').set('Origin', url);
 
