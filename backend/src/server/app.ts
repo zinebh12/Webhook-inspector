@@ -17,7 +17,7 @@ app.set('trust proxy', true);
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
-const allowedOrigins = [process.env.APP_URL, 'http://localhost:5173'].filter(Boolean);
+const allowedOrigins = [process.env.APP_URL, 'http://localhost:3000'].filter(Boolean);
 
 const setOrigin = (
   origin: string | undefined,
