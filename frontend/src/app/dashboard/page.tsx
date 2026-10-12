@@ -1,7 +1,12 @@
-import React from "react";
+import { Navbar } from "@/components/layout/NavBar";
 
 const page = () => {
-  return <div>Dashboard!</div>;
+  return (
+    <div>
+      <Navbar />
+      <h1>Dashboard!</h1>
+    </div>
+  );
 };
 
 export default page;

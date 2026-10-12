@@ -38,6 +38,20 @@ export const login = async <T>(path: string, user: LoginData): Promise<T> => {
   return data as T;
 };
 
+export const user = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "User not found");
+  }
+
+  return data as T;
+};
+
 export const logout = async () => {
   const response = await fetch(`${API_BASE_URL}/logout`, {
     method: "POST",

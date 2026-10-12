@@ -2,7 +2,7 @@
 export default function Home() {
   return (
   <div>
-    hello fucking world
+    hello world
   </div>
   );
 }
