@@ -20,8 +20,8 @@ export const register = async <T>(
   return data as T;
 };
 
-export const login = async (user: LoginData) => {
-  const response = await fetch(`${API_BASE_URL}/login`, {
+export const login = async <T>(path: string, user: LoginData): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export const login = async (user: LoginData) => {
     throw new Error(data.error || "Invalid email or password");
   }
 
-  return data;
+  return data as T;
 };
 
 export const logout = async () => {
