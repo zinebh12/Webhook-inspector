@@ -3,5 +3,10 @@ import { user } from "@/services/auth.api";
 import { User } from "@/types/auth.types";
 
 export const useUser = () => {
-  return useQuery({ queryKey: ["user"], queryFn: () => user<User>("/user") });
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: () => user<User>("/user"),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
 };
