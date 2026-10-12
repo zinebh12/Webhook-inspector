@@ -52,8 +52,8 @@ export const user = async <T>(path: string): Promise<T> => {
   return data as T;
 };
 
-export const logout = async () => {
-  const response = await fetch(`${API_BASE_URL}/logout`, {
+export const logout = async (path: string) => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     credentials: "include",
   });
