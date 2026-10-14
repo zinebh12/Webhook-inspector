@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useLogin } from "../hooks/use-login.hook";
 import { useState } from "react";
+import FormButton from "@/components/ui/FormButton";
+import FormHeader from "@/components/ui/FormHeader";
+import Input from "@/components/ui/Input";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -24,24 +27,63 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto flex w-full max-w-md h-full lg:h-screen flex-col gap-6 rounded-2xl p-8 text-white"
+    >
+      {/* Logo and branding */}
+      <FormHeader />
+
+      <div className="h-px bg-linear-r from-transparent via-blue-800 to-transparent" />
+
+      {/* Heading */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-semibold tracking-tight">
+          Log into your account
+        </h2>
+        <p className="text-sm text-slate-400">
+          Continue inspecting your webhooks in real time.
+        </p>
+      </div>
+
+      {/* Email */}
+      <Input
+        label="Email address"
         type="email"
-        placeholder="email"
+        name="email"
+        placeholder="you@example.com"
         value={formData.email}
-        onChange={(e) => {
-          setFormData({ ...formData, email: e.target.value });
-        }}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        required
       />
-      <input
-        type="text"
-        placeholder="password"
+
+      {/* Password */}
+      <Input
+        label="Password"
+        name="password"
+        autoComplete="new-password"
+        placeholder="Enter a password"
+        required
         value={formData.password}
-        onChange={(e) => {
-          setFormData({ ...formData, password: e.target.value });
-        }}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
       />
-      <button type="submit">Login</button>
+
+      {/* Submit */}
+      <FormButton BtnFunction={"Login"} />
+
+      <p className="text-center text-sm text-slate-400">
+        {`Don't have an account?`}{" "}
+        <a
+          href="/register"
+          className="font-medium text-blue-400 transition hover:text-blue-300 hover:underline"
+        >
+          Sign up
+        </a>
+      </p>
+
+      <p className="text-center text-xs text-slate-600">
+        Built for developers. Designed for debugging.
+      </p>
     </form>
   );
 };
