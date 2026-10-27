@@ -2,8 +2,7 @@ import SideBar from "@/components/layout/SideBar";
 
 const page = () => {
   return (
-    <div>
-      <h1>Dashboard!</h1>
+    <div className="flex items-start justify-start w-full h-full">
       <SideBar />
     </div>
   );

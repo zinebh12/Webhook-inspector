@@ -1,50 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import { useEndpoints } from "../hooks/use-endpoints.hook";
-import { usePostEndpoint } from "../hooks/use-newEndpoint.hook";
-import { useUser } from "@/features/auth/hook/use-user.hook";
-import Input from "@/components/ui/Input";
+import type { Endpoint } from "@/types/endpoints.types";
 
 const EndpointsList = () => {
-  const { data: user } = useUser();
-  const [formData, setFormData] = useState({
-    name: "",
-    userId: user?.id,
-  });
   const { data: endpoints } = useEndpoints();
 
-  const showEndpoints = () => {
-    console.log(endpoints);
-  };
-
-  const endpointMutation = usePostEndpoint();
-
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    endpointMutation.mutate(formData, {
-      onSuccess() {
-        console.log("Created!");
-      },
-    });
-  };
-
   return (
-    <>
-      <div onClick={showEndpoints}>EndpointsList</div>
-      <form onSubmit={handleSubmit}>
-        <Input
-          label="name"
-          type="name"
-          name="name"
-          placeholder="you@example.com"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-        />
-        <button type="submit">Add endpoint</button>
-      </form>
-    </>
+    <div className="mx-1 space-y-2">
+      {((endpoints ?? []) as Endpoint[]).map((endpoint: Endpoint) => (
+        <div
+          key={endpoint.id}
+          className="border border-gray-700 rounded-xl p-2 bg-gray-900 text-xs capitalize space-y-1"
+        >
+          <h5>{endpoint.name}</h5>
+          <span className="text-gray-500">{endpoint.slug}</span>
+        </div>
+      ))}
+    </div>
   );
 };
 
