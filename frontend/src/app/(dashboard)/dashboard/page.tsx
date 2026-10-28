@@ -1,11 +1,13 @@
-import SideBar from "@/components/layout/SideBar";
+import DashboardContent from "@/components/layout/DashboardContent";
 
-const page = () => {
+import { Suspense } from "react";
+
+const Page = () => {
   return (
-    <div className="flex items-start justify-start w-full h-full">
-      <SideBar />
-    </div>
+    <Suspense>
+      <DashboardContent />
+    </Suspense>
   );
 };
 
-export default page;
+export default Page;

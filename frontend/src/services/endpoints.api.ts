@@ -10,7 +10,21 @@ export const getEndpoints = async <T>(path: string): Promise<T> => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Failed to add endpoint");
+    throw new Error(data.error || "Failed to fetch endpoints");
+  }
+
+  return data as T;
+};
+
+export const getSingleEndpoint = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to get endpoint");
   }
 
   return data as T;
