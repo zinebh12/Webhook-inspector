@@ -18,7 +18,7 @@ const EndpointDetails = ({
       <h2 className="capitalize text-xl font-semibold">
         {endpoint?.endpoint.name}
       </h2>
-      <div className="flex items-end space-x-2 text-sm">
+      <div className="lg:flex items-end space-x-2 text-xs lg:text-sm">
         <h5 className="text-gray-400">Webhook URL:</h5>
         <span
           onClick={copyToClipboard}
