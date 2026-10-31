@@ -1,4 +1,9 @@
-const MobileNavigation = ({ activeTab, onTabChange }) => {
+import { MobileNavigationProps } from "@/types/nav.types";
+
+const MobileNavigation = ({
+  activeTab,
+  onTabChange,
+}: MobileNavigationProps) => {
   return (
     <div className="flex items-center justify-between w-full ">
       <button

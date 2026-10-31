@@ -7,8 +7,7 @@ import { useSearchParams } from "next/navigation";
 import MobileNavigation from "./MobileNavigation";
 
 import { useState } from "react";
-
-type ActiveTab = "endpoints" | "requests";
+import { ActiveTab } from "@/types/nav.types";
 
 const DashboardContent = () => {
   const searchParams = useSearchParams();
