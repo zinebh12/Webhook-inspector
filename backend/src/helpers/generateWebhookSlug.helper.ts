@@ -5,5 +5,5 @@ export const generateWebhookSlug = (length = 10) => {
 };
 
 export const buildWebhookUrl = (slug: string) => {
-  return `${process.env.BASE_URL}/hooks/${slug}`;
+  return `${process.env.BASE_URL}/hook/${slug}`;
 };

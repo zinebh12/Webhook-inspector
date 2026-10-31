@@ -16,3 +16,8 @@ export interface newEndpoint {
   name: string;
   userId: number | undefined;
 }
+
+export type EndpointResponse = {
+  endpoint: Endpoint;
+  fullUrl: string;
+};

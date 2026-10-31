@@ -69,7 +69,7 @@ export const getSingleEndpoint = async (req: authRequest, res: Response) => {
         error: 'Endpoint not found',
       });
     }
-    return res.status(200).json(endpoint);
+    return res.status(200).json({ endpoint, fullUrl: buildWebhookUrl(endpoint.slug) });
   } catch (error) {
     // console.error(error);
     res.status(500).json({
