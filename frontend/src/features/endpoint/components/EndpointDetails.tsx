@@ -1,6 +1,7 @@
 import { EndpointResponse } from "@/types/endpoints.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import IsActive from "@/features/isActive/components/IsActive";
 
 const EndpointDetails = ({
   endpoint,
@@ -15,9 +16,12 @@ const EndpointDetails = ({
 
   return (
     <div className="bg-gray-800 w-full py-2 px-4 space-y-2 border-b border-gray-700">
-      <h2 className="capitalize text-xl font-semibold">
-        {endpoint?.endpoint.name}
-      </h2>
+      <div className="flex items-center justify-between w-full">
+        <h2 className="capitalize text-xl font-semibold">
+          {endpoint?.endpoint.name}
+        </h2>
+        <IsActive endpoint={endpoint?.endpoint} />
+      </div>
       <div className="lg:flex items-end space-x-2 text-xs lg:text-sm">
         <h5 className="text-gray-400">Webhook URL:</h5>
         <span

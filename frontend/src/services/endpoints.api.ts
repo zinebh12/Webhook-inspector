@@ -51,3 +51,25 @@ export const postEndpoint = async <T>(
 
   return data as T;
 };
+
+export const patchActiveEndpoint = async <T>(
+  path: string,
+  isActive: T,
+): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(isActive),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to toggle endpoint");
+  }
+
+  return data as T;
+};
