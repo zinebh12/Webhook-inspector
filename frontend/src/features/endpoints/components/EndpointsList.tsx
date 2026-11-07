@@ -5,6 +5,8 @@ import type { Endpoint } from "@/types/endpoints.types";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
+import DeleteBtn from "@/features/deleteEndpoint/components/DeleteBtn";
+
 const EndpointsList = () => {
   const { data: endpoints } = useEndpoints();
 
@@ -22,18 +24,28 @@ const EndpointsList = () => {
   };
 
   return (
-      <div className="mx-1 space-y-2">
-        {((endpoints ?? []) as Endpoint[]).map((endpoint: Endpoint) => (
-          <div
-            onClick={() => handleSelectedEndpoint(endpoint.id)}
-            key={endpoint.id}
-            className="cursor-pointer border border-gray-700 rounded-xl p-2 bg-gray-900 text-xs capitalize space-y-1"
-          >
+    <div className="mx-1 space-y-2">
+      {((endpoints ?? []) as Endpoint[]).map((endpoint: Endpoint) => (
+        <div
+          onClick={() => handleSelectedEndpoint(endpoint.id)}
+          key={endpoint.id}
+          className="cursor-pointer border border-gray-700 rounded-xl p-2 bg-gray-900 text-xs capitalize space-y-1"
+        >
+          <div className="flex items-center justify-between">
             <h5>{endpoint.name}</h5>
-            <span className="text-gray-500">{endpoint.slug}</span>
+            <DeleteBtn
+              id={endpoint.id}
+              firstEndpoint={
+                ((endpoints ?? []) as Endpoint[]).filter(
+                  (e) => e.id !== endpoint.id,
+                )[0]
+              }
+            />
           </div>
-        ))}
-      </div>
+          <span className="text-gray-500">{endpoint.slug}</span>
+        </div>
+      ))}
+    </div>
   );
 };
 

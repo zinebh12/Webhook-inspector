@@ -73,3 +73,15 @@ export const patchActiveEndpoint = async <T>(
 
   return data as T;
 };
+
+export const deleteEndpoint = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete application");
+  }
+
+  return response as T;
+};
