@@ -41,7 +41,10 @@ export const getEndpoints = async (req: authRequest, res: Response) => {
     if (!userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    const endpoint = await db.orm.public.WebhookEndpoint.where({ userId }).all();
+    const endpoint = await db.orm.public.WebhookEndpoint.where({ userId })
+      .orderBy((endpoint) => endpoint.createdAt.desc())
+      .all();
+      
     return res.status(200).json(endpoint);
   } catch (error) {
     // console.error(error);
