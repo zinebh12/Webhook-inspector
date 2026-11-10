@@ -8,6 +8,7 @@ import MobileNavigation from "./MobileNavigation";
 
 import { useState } from "react";
 import { ActiveTab } from "@/types/nav.types";
+import NoEndpoints from "../ui/NoEndpoints";
 
 const DashboardContent = () => {
   const searchParams = useSearchParams();
@@ -19,7 +20,11 @@ const DashboardContent = () => {
     <>
       <div className="items-start justify-start w-full h-full hidden md:flex">
         <SideBar />
-        <EndpointData endpointId={endpointId} />
+        {endpointId ? (
+          <EndpointData endpointId={endpointId} />
+        ) : (
+          <NoEndpoints />
+        )}
       </div>
 
       <div className="md:hidden">
