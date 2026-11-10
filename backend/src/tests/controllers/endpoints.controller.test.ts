@@ -85,7 +85,7 @@ describe('POST /endpoint', () => {
       .set('Accept', 'application/json');
 
     expect(response.status).toBe(201);
-    expect(response.body.fullUrl).toMatch(/^http:\/\/.+\/hooks\/.+/);
+    expect(response.body.fullUrl).toMatch(/^http:\/\/.+\/hook\/.+/);
     expect(response.body.endpoint.userId).toBe('user-1');
   });
 
@@ -166,7 +166,7 @@ describe('GET /endpoint/:id', () => {
       name: 'Stripe test endpoint',
       slug: 'a1b2c3d4e5',
       isActive: true,
-      createdAt: new Date('2026-09-20T10:00:00.000Z'),
+      createdAt: '2026-09-20T10:00:00.000Z',
     };
 
     mockGet.mockReturnValue({
@@ -180,8 +180,8 @@ describe('GET /endpoint/:id', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(
       expect.objectContaining({
-        ...mockEndpointRow,
-        createdAt: '2026-09-20T10:00:00.000Z',
+        endpoint: mockEndpointRow,
+        fullUrl: 'http://localhost:3000/hook/a1b2c3d4e5'
       }),
     );
   });

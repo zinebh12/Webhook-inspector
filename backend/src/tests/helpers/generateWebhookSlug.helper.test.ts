@@ -23,6 +23,6 @@ describe('build webhook url', () => {
   it('returns a costume url', () => {
     process.env.BASE_URL = 'http://example.com';
     const result = buildWebhookUrl('abc-123');
-    expect(result).toBe('http://example.com/hooks/abc-123');
+    expect(result).toBe('http://example.com/hook/abc-123');
   });
 });
