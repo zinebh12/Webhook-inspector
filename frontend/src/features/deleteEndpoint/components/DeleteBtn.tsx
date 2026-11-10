@@ -25,15 +25,9 @@ const DeleteBtn = ({
 
     deleteEndpointMutation.mutate(id, {
       onSuccess() {
-        if (firstEndpoint) {
-          router.replace(`/dashboard?endpoint=${firstEndpoint.id}`, {
-            scroll: false,
-          });
-        } else {
-          router.replace("/dashboard", {
-            scroll: false,
-          });
-        }
+        router.replace(`/dashboard`, {
+          scroll: false,
+        });
       },
     });
   };
