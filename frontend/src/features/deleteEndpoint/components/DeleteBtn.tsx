@@ -8,6 +8,7 @@ import { Endpoint } from "@/types/endpoints.types";
 
 const DeleteBtn = ({
   id,
+  firstEndpoint,
 }: {
   id: string;
   firstEndpoint: Endpoint;
@@ -24,9 +25,15 @@ const DeleteBtn = ({
 
     deleteEndpointMutation.mutate(id, {
       onSuccess() {
-        router.replace(`/dashboard`, {
-          scroll: false,
-        });
+        if (firstEndpoint) {
+          router.replace(`/dashboard?endpoint=${firstEndpoint.id}`, {
+            scroll: false,
+          });
+        } else {
+          router.replace("/dashboard", {
+            scroll: false,
+          });
+        }
       },
     });
   };

@@ -23,8 +23,7 @@ const EndpointsList = () => {
       scroll: false,
     });
   };
-
-  
+ 
   useEffect(() => {
     const endpointList = (endpoints ?? []) as Endpoint[];
     if (!endpointList.length || searchParams.get("endpoint")) return;
