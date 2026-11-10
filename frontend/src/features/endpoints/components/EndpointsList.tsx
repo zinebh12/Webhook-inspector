@@ -4,6 +4,7 @@ import { useEndpoints } from "../hooks/use-endpoints.hook";
 import type { Endpoint } from "@/types/endpoints.types";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 import DeleteBtn from "@/features/deleteEndpoint/components/DeleteBtn";
 
@@ -22,6 +23,14 @@ const EndpointsList = () => {
       scroll: false,
     });
   };
+
+  
+  useEffect(() => {
+    const endpointList = (endpoints ?? []) as Endpoint[];
+    if (!endpointList.length || searchParams.get("endpoint")) return;
+
+    handleSelectedEndpoint(endpointList[0].id);
+  }, [endpoints]);
 
   return (
     <div className="mx-1 space-y-2">
