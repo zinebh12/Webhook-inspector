@@ -6,6 +6,9 @@ import { useDeleteEndpoint } from "../hooks/use-delete.hook";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Endpoint } from "@/types/endpoints.types";
 
+import { useState } from "react";
+import DeleteEndpointDialog from "@/components/ui/DeleteEndpointDialog";
+
 const DeleteBtn = ({
   id,
   firstEndpoint,
@@ -17,6 +20,8 @@ const DeleteBtn = ({
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleDelete = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -36,18 +41,27 @@ const DeleteBtn = ({
         }
       },
     });
+    setOpenDialog(false);
   };
 
   return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        handleDelete();
-      }}
-      className="text-gray-400 hover:text-red-500 cursor-pointer"
-    >
-      <FontAwesomeIcon icon={faTrashCan} />
-    </button>
+    <>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpenDialog(!openDialog);
+        }}
+        className="text-gray-400 hover:text-red-500 cursor-pointer"
+      >
+        <FontAwesomeIcon icon={faTrashCan} />
+      </button>
+      {openDialog && (
+        <DeleteEndpointDialog
+          setOpen={setOpenDialog}
+          onConfirm={handleDelete}
+        />
+      )}
+    </>
   );
 };
 
