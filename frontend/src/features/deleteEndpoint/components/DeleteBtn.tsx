@@ -8,7 +8,6 @@ import { Endpoint } from "@/types/endpoints.types";
 
 const DeleteBtn = ({
   id,
-  firstEndpoint,
 }: {
   id: string;
   firstEndpoint: Endpoint;
