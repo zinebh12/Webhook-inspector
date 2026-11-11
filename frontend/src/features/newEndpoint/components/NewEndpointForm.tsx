@@ -51,7 +51,6 @@ const NewEndpoint = () => {
           placeholder="Endpoint name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
         />
         <AddButton />
       </form>
