@@ -1,17 +1,31 @@
+import { useState } from "react";
+
 import { EndpointResponse } from "@/types/endpoints.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import IsActive from "@/features/isActive/components/IsActive";
+import Toast, { ToastVariant } from "@/components/ui/Toast";
 
 const EndpointDetails = ({
   endpoint,
 }: {
   endpoint: EndpointResponse | undefined;
 }) => {
+  const [toast, setToast] = useState<{
+    title: string;
+    message: string;
+    variant: ToastVariant;
+  } | null>();
+
   const copyToClipboard = () => {
     if (endpoint?.fullUrl) {
       navigator.clipboard.writeText(endpoint.fullUrl);
     }
+    setToast({
+      title: "URL copied!",
+      message: "Your webhook URL was successfully copied.",
+      variant: "success",
+    });
   };
 
   return (
@@ -36,7 +50,16 @@ const EndpointDetails = ({
         >
           <FontAwesomeIcon icon={faCopy} />
         </button>
+      {toast && (
+        <Toast
+          title={toast.title}
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
+      )}
       </div>
+
     </div>
   );
 };
