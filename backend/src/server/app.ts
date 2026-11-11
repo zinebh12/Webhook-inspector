@@ -45,7 +45,7 @@ app.use(limiter);
 app.use('/api/auth', authRoute);
 app.use('/api/webhook/endpoints', endpointRoutes);
 app.use('/api/webhook/request', webhookRequestsRoutes);
-app.use('/webhook', webhookReceiverRoute);
+app.use('/hook', webhookReceiverRoute);
 app.use('/webhook', replayLimiter, replayRoute);
 
 //health check!
