@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 // rateLimiters.config.ts
 export const limiterConfig = {
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 1000,
   standardHeaders: 'draft-8' as const,
   legacyHeaders: false,
   ipv6Subnet: 56,
