@@ -4,6 +4,8 @@ import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
+
 import { useState } from "react";
 
 const Requests = ({ id }: { id: string | null }) => {
@@ -47,6 +49,11 @@ const Requests = ({ id }: { id: string | null }) => {
               bodyObject={request.body}
             />
           )}
+
+          <button className="cursor-pointer bg-button-disabled hover:bg-button-primary-hover text-text-secondary hover:text-text-primary px-2 py-2 rounded-md flex items-center gap-1">
+            <FontAwesomeIcon icon={faCopy} />
+            <span className="text-sm font-mono" >Copy request</span>
+          </button>
         </div>
       ))}
     </div>
