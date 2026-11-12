@@ -13,3 +13,18 @@ export const getRequests = async <T>(path: string): Promise<T> => {
 
   return data as T;
 };
+
+export const clearHooks = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to clear requests");
+  }
+
+  return data as T;
+};

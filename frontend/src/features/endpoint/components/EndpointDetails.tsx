@@ -8,6 +8,8 @@ import Toast, { ToastVariant } from "@/components/ui/Toast";
 
 import { copyToClipboard } from "@/utils/copyToClipboard";
 
+import DeleteBtn from "@/features/clearRequests/components/DeleteBtn";
+
 const EndpointDetails = ({
   endpoint,
 }: {
@@ -20,12 +22,13 @@ const EndpointDetails = ({
   } | null>();
 
   return (
-    <div className="bg-card-background w-full py-2 px-4 space-y-2 border-b border-border-default">
-      <div className="flex items-center justify-between w-full">
+    <div className="flex items-end justify-between bg-card-background w-full py-2 px-4 space-y-2 border-b border-border-default">
+    <div>
+        <div className="flex items-center justify-between w-full">
         <h2 className="capitalize text-text-primary text-xl font-semibold">
           {endpoint?.endpoint.name}
         </h2>
-        <IsActive endpoint={endpoint?.endpoint} />
+      
       </div>
       <div className="lg:flex items-end space-x-2 text-xs lg:text-sm">
         <h5 className="text-text-secondary">Webhook URL:</h5>
@@ -70,6 +73,11 @@ const EndpointDetails = ({
           />
         )}
       </div>
+    </div>
+        <div className="space-y-3">
+          <IsActive endpoint={endpoint?.endpoint} />
+          <DeleteBtn id={endpoint?.endpoint.id} />
+        </div>
     </div>
   );
 };

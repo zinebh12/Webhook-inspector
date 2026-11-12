@@ -32,9 +32,9 @@ const Requests = ({ id }: { id: string | null }) => {
   const allData = requests?.data.map((d) => d);
 
   return (
-    <div className="bg-card-background rounded-xl mx-4">
+    <div className="mx-4 space-y-4">
       {requestsData?.map((request) => (
-        <div key={request.id} className=" p-4 rounded-xl space-y-4">
+        <div key={request.id} className="bg-card-background p-4 rounded-xl space-y-4">
           <div
             className="flex items-center justify-between cursor-pointer"
             onClick={() => setShowJson(!showJson)}
@@ -54,31 +54,32 @@ const Requests = ({ id }: { id: string | null }) => {
             </button>
           </div>
           {showJson && (
-            <JsonFormatting
-              headerObject={request.headers}
-              bodyObject={request.body}
-            />
+            <>
+              <JsonFormatting
+                headerObject={request.headers}
+                bodyObject={request.body}
+              />
+              <button className="cursor-pointer bg-button-disabled hover:bg-button-primary-hover text-text-secondary hover:text-text-primary px-2 py-2 rounded-md flex items-center gap-1">
+                <FontAwesomeIcon icon={faCopy} />
+                <span
+                  className="text-sm font-mono"
+                  onClick={() => {
+                    copyToClipboard(
+                      JSON.stringify(allData, null, 2),
+                      {
+                        title: "Webhook copied!",
+                        message: "Your webhook was successfully copied.",
+                        variant: "success",
+                      },
+                      setToast,
+                    );
+                  }}
+                >
+                  Copy request
+                </span>
+              </button>
+            </>
           )}
-
-          <button className="cursor-pointer bg-button-disabled hover:bg-button-primary-hover text-text-secondary hover:text-text-primary px-2 py-2 rounded-md flex items-center gap-1">
-            <FontAwesomeIcon icon={faCopy} />
-            <span
-              className="text-sm font-mono"
-              onClick={() => {
-                copyToClipboard(
-                  JSON.stringify(allData, null, 2),
-                  {
-                    title: "Webhook copied!",
-                    message: "Your webhook was successfully copied.",
-                    variant: "success",
-                  },
-                  setToast,
-                );
-              }}
-            >
-              Copy request
-            </span>
-          </button>
         </div>
       ))}
       {toast && (
