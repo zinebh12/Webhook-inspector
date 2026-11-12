@@ -1,3 +1,4 @@
+import JsonFormatting from "@/components/ui/JsonFormatting";
 import { useRequests } from "../hooks/use-requests.hook";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
@@ -29,32 +30,14 @@ const Requests = ({ id }: { id: string | null }) => {
               Headers
             </h2>
             <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#03003b] p-4 text-xs">
-              {request.headers &&
-                Object.entries(request.headers).map(([key, value]) => (
-                  <div key={key} className="flex gap-2 text-sm font-mono">
-                    <span className="text-blue-400">{`${key}:`}</span>
-
-                    <span className="break-all text-white">{`${value}`}</span>
-                  </div>
-                ))}
+              <JsonFormatting object={request.headers} />
             </div>
           </div>
 
           <div className="space-y-1">
             <h2 className="text-sm text-gray-400 uppercase font-bold">body</h2>
             <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#03003b] p-4 text-xs">
-              {request.body &&
-                Object.entries(request.body).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex gap-2 text-sm font-mono"
-                    onClick={() => console.log(requests)}
-                  >
-                    <span className="text-blue-400">{`${key}:`}</span>
-
-                    <span className="break-all text-white">{`${value}`}</span>
-                  </div>
-                ))}
+              <JsonFormatting object={request.body} />
             </div>
           </div>
         </div>
