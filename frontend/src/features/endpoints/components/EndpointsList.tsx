@@ -37,7 +37,7 @@ const EndpointsList = () => {
         <div
           onClick={() => handleSelectedEndpoint(endpoint.id)}
           key={endpoint.id}
-          className="cursor-pointer border border-gray-700 rounded-xl p-2 bg-gray-900 text-xs capitalize space-y-1"
+          className="cursor-pointer border border-gray-700 rounded-xl p-2 bg-card-background hover:bg-card-hover text-xs capitalize space-y-1"
         >
           <div className="flex items-center justify-between">
             <h5>{endpoint.name}</h5>

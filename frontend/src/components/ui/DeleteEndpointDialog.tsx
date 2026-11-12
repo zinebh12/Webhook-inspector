@@ -29,11 +29,11 @@ const DeleteEndpointDialog = ({
         aria-modal="true"
         aria-labelledby="delete-title"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl"
+        className="w-full max-w-md rounded-2xl border border-gray-700 bg-card-background p-6 shadow-2xl"
       >
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-500/10 text-red-400">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-button-disabled text-button-primary">
             <FontAwesomeIcon icon={faTriangleExclamation} className="text-lg" />
           </div>
 
@@ -41,7 +41,7 @@ const DeleteEndpointDialog = ({
             onClick={() => {
               setOpen(false);
             }}
-            className="cursor-pointer text-gray-500 transition hover:text-white"
+            className="cursor-pointer text-text-secondary transition hover:text-text-primary"
             aria-label="Close dialog"
           >
             <FontAwesomeIcon icon={faXmark} />
@@ -49,11 +49,11 @@ const DeleteEndpointDialog = ({
         </div>
 
         {/* Content */}
-        <h2 id="delete-title" className="mb-2 text-lg font-semibold text-white">
+        <h2 id="delete-title" className="mb-2 text-lg font-semibold text-text-primary">
           Delete endpoint?
         </h2>
 
-        <p className="text-sm leading-relaxed text-gray-400">
+        <p className="text-sm leading-relaxed text-text-secondary">
           Are you sure you want to delete this endpoint? This action cannot be
           undone.
         </p>
@@ -64,14 +64,14 @@ const DeleteEndpointDialog = ({
             onClick={() => {
               setOpen(false);
             }}
-            className="cursor-pointer rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 transition hover:bg-gray-800 disabled:opacity-50"
+            className="cursor-pointer rounded-lg border border-border-default px-4 py-2 text-sm text-text-secondary transition hover:bg-content-background disabled:opacity-50"
           >
             Cancel
           </button>
 
           <button
             onClick={onConfirm}
-            className="cursor-pointer flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer flex items-center gap-2 rounded-lg bg-button-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-button-active disabled:cursor-not-allowed disabled:opacity-50"
           >
             Delete
             <FontAwesomeIcon icon={faTrashCan} />

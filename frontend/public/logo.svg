@@ -8,7 +8,7 @@
 >
   <path
     d="M12 12L24 24L36 12M24 24L36 36"
-    stroke="#60A5FA"
+    stroke="#f6339a"
     stroke-width="2.5"
     stroke-linecap="round"
     stroke-linejoin="round"
@@ -17,28 +17,28 @@
     cx="12"
     cy="12"
     r="5"
-    fill="#0B1220"
-    stroke="#60A5FA"
+    fill="#181019"
+    stroke="#f6339a"
     stroke-width="2.5"
   />
   <circle
     cx="36"
     cy="12"
     r="5"
-    fill="#0B1220"
-    stroke="#60A5FA"
+    fill="#181019"
+    stroke="#f6339a"
     stroke-width="2.5"
   />
   <circle
     cx="36"
     cy="36"
     r="5"
-    fill="#0B1220"
-    stroke="#60A5FA"
+    fill="#181019"
+    stroke="#f6339a"
     stroke-width="2.5"
   />
   <path
     d="M24 15L19 25H25L22 33L30 21H24L27 15H24Z"
-    fill="#38BDF8"
+    fill="#f6339a"
   />
 </svg>

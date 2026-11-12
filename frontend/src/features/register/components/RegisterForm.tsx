@@ -75,13 +75,13 @@ const RegisterForm = () => {
         Already have an account?{" "}
         <a
           href="/login"
-          className="font-medium text-blue-400 transition hover:text-blue-300 hover:underline"
+          className="font-medium text-text-pinkest transition hover:text-text-secondary hover:underline"
         >
           Log in
         </a>
       </p>
 
-      <p className="text-center text-xs text-slate-600">
+      <p className="text-center text-xs text-text-muted">
         Built for developers. Designed for debugging.
       </p>
     </form>

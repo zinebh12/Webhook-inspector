@@ -25,14 +25,14 @@ const Input = ({ label, id, ...props }: InputProps) => {
                 : "password"
               : props.type
           }
-          className={`w-full rounded-lg border border-slate-700 bg-[#111c2e] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 hover:border-slate-600 focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10`}
+          className={`w-full rounded-lg border border-input-border bg-input-background px-4 py-3 text-sm text-input-text placeholder:text-input-placeholder outline-none transition focus:border-input-border-focus`}
         />
         {label === "Password" && (
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 transition hover:text-deep-forest"
+            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-text-secondary transition hover:text-deep-forest"
           >
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
           </button>

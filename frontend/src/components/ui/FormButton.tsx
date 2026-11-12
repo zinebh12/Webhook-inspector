@@ -2,7 +2,7 @@ const FormButton = ({ BtnFunction }: { BtnFunction: string }) => {
   return (
     <button
       type="submit"
-      className="cursor-pointer group mt-1 flex w-full items-end justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 transition hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-400/30 active:scale-[0.99]"
+      className="cursor-pointer group mt-1 flex w-full items-end justify-center gap-2 rounded-lg bg-button-primary px-4 py-3 text-sm font-semibold text-text-primary shadow-lg shadow-pink-950/40 transition hover:bg-button-primary-hover focus:outline-none focus:ring-4 focus:ring-pink-400/30 active:scale-[0.99]"
     >
       {BtnFunction}
       <svg

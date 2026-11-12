@@ -72,7 +72,7 @@ const DeleteBtn = ({
           e.stopPropagation();
           setOpenDialog(!openDialog);
         }}
-        className="text-gray-400 hover:text-red-500 cursor-pointer"
+        className="text-button-primary hover:text-button-primary-hover active:text-button-primary-active cursor-pointer"
       >
         <FontAwesomeIcon icon={faTrashCan} />
       </button>

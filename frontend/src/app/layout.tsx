@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-[#0b1220]">
+      <body className="bg-app-background">
         <Providers>{children}</Providers>
       </body>
     </html>

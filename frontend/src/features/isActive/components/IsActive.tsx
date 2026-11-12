@@ -26,7 +26,7 @@ const IsActive = ({ endpoint }: Partial<EndpointResponse> = {}) => {
       <span
         className={`inline-block w-2 h-2 rounded-full ${endpoint?.isActive ? " bg-green-500" : "bg-red-500"}`}
       />
-      <span className="text-xs cursor-pointer" onClick={toggleActivity}>
+      <span className="text-xs cursor-pointer text-text-primary" onClick={toggleActivity}>
         {endpoint?.isActive ? "Live" : "Off"}
       </span>
     </div>

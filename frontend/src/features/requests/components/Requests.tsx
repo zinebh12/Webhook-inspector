@@ -14,35 +14,24 @@ const Requests = ({ id }: { id: string | null }) => {
   }));
 
   return (
-    <>
+    <div className="bg-card-background rounded-xl mx-4">
       {requestsData?.map((request) => (
-        <div key={request.id} className="bg-gray-800 p-4 rounded-xl space-y-4">
+        <div key={request.id} className=" p-4 rounded-xl space-y-4">
           <div className=" space-x-1.5">
-            <span className="text-sm font-semibold text-blue-500 bg-cyan-900 w-fit px-2 py-1 rounded-md">
+            <span className="text-sm font-semibold text-request-method bg-request-selected w-fit px-2 py-1 rounded-md">
               {request.method}
             </span>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-text-secondary">
               {formatTimeAgo(request.receivedAt)}
             </span>
           </div>
-          <div className="space-y-1">
-            <h2 className="text-sm text-gray-400 uppercase font-bold">
-              Headers
-            </h2>
-            <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#03003b] p-4 text-xs">
-              <JsonFormatting object={request.headers} />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <h2 className="text-sm text-gray-400 uppercase font-bold">body</h2>
-            <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#03003b] p-4 text-xs">
-              <JsonFormatting object={request.body} />
-            </div>
-          </div>
+          <JsonFormatting
+            headerObject={request.headers}
+            bodyObject={request.body}
+          />
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

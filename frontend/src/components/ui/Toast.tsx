@@ -41,7 +41,7 @@ const Toast = ({
   return (
     <div
       role={variant === "error" ? "alert" : "status"}
-      className="fixed right-5 top-5 z-100 w-[calc(100%-40px)] max-w-sm animate-in slide-in-from-top-3 fade-in duration-300 overflow-hidden rounded-xl border border-gray-700/80 bg-gray-900 shadow-2xl shadow-black/40"
+      className="fixed right-5 top-5 z-100 w-[calc(100%-40px)] max-w-sm animate-in slide-in-from-top-3 fade-in duration-300 overflow-hidden rounded-xl border border-border-default bg-app-background shadow-2xl shadow-black/40"
     >
       <div className="flex items-center gap-3 p-4">
         {/* Icon */}

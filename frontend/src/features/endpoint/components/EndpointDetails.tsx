@@ -29,18 +29,18 @@ const EndpointDetails = ({
   };
 
   return (
-    <div className="bg-gray-800 w-full py-2 px-4 space-y-2 border-b border-gray-700">
+    <div className="bg-card-background w-full py-2 px-4 space-y-2 border-b border-border-default">
       <div className="flex items-center justify-between w-full">
-        <h2 className="capitalize text-xl font-semibold">
+        <h2 className="capitalize text-text-primary text-xl font-semibold">
           {endpoint?.endpoint.name}
         </h2>
         <IsActive endpoint={endpoint?.endpoint} />
       </div>
       <div className="lg:flex items-end space-x-2 text-xs lg:text-sm">
-        <h5 className="text-gray-400">Webhook URL:</h5>
+        <h5 className="text-text-secondary">Webhook URL:</h5>
         <span
           onClick={copyToClipboard}
-          className="text-blue-500 hover:underline cursor-pointer"
+          className="text-pink-500 font-mono hover:underline cursor-pointer"
         >
           {endpoint?.fullUrl}
         </span>
