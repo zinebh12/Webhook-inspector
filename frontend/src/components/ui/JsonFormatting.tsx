@@ -11,7 +11,7 @@ const JsonFormatting = ({
   bodyObject: WebhookRequestBody;
 }) => {
   return (
-    <>
+    <div className="animate-in slide-in-from-top-3 fade-in duration-300 mt-6 space-y-3">
       <div className="space-y-1">
         <h2 className="text-sm text-text-muted uppercase font-bold">headers</h2>
         <div className="overflow-x-auto rounded-xl bg-json-background p-4 text-xs">
@@ -37,7 +37,7 @@ const JsonFormatting = ({
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
