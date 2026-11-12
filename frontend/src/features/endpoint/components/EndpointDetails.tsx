@@ -31,12 +31,14 @@ const EndpointDetails = ({
         <h5 className="text-text-secondary">Webhook URL:</h5>
         <span
           onClick={() => {
-            copyToClipboard(endpoint?.fullUrl, () =>
-              setToast({
+            copyToClipboard(
+              endpoint?.fullUrl,
+              {
                 title: "URL copied!",
                 message: "Your webhook URL was successfully copied.",
                 variant: "success",
-              }),
+              },
+              setToast,
             );
           }}
           className="text-pink-500 font-mono hover:underline cursor-pointer"
@@ -46,12 +48,14 @@ const EndpointDetails = ({
         <button
           className="cursor-pointer text-gray-400"
           onClick={() => {
-            copyToClipboard(endpoint?.fullUrl, () =>
-              setToast({
+            copyToClipboard(
+              endpoint?.fullUrl,
+              {
                 title: "URL copied!",
                 message: "Your webhook URL was successfully copied.",
                 variant: "success",
-              }),
+              },
+              setToast,
             );
           }}
         >

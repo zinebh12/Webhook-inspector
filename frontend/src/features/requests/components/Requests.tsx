@@ -7,11 +7,19 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
 import { useState } from "react";
+import Toast, { ToastVariant } from "@/components/ui/Toast";
+import { copyToClipboard } from "@/utils/copyToClipboard";
 
 const Requests = ({ id }: { id: string | null }) => {
   const { data: requests } = useRequests(id);
 
   const [showJson, setShowJson] = useState(false);
+
+  const [toast, setToast] = useState<{
+    title: string;
+    message: string;
+    variant: ToastVariant;
+  } | null>();
 
   const requestsData = requests?.data.map((d) => ({
     id: d.id,
@@ -20,6 +28,8 @@ const Requests = ({ id }: { id: string | null }) => {
     method: d.method,
     receivedAt: d.receivedAt,
   }));
+
+  const allData = requests?.data.map((d) => d);
 
   return (
     <div className="bg-card-background rounded-xl mx-4">
@@ -52,10 +62,33 @@ const Requests = ({ id }: { id: string | null }) => {
 
           <button className="cursor-pointer bg-button-disabled hover:bg-button-primary-hover text-text-secondary hover:text-text-primary px-2 py-2 rounded-md flex items-center gap-1">
             <FontAwesomeIcon icon={faCopy} />
-            <span className="text-sm font-mono" >Copy request</span>
+            <span
+              className="text-sm font-mono"
+              onClick={() => {
+                copyToClipboard(
+                  JSON.stringify(allData, null, 2),
+                  {
+                    title: "Webhook copied!",
+                    message: "Your webhook was successfully copied.",
+                    variant: "success",
+                  },
+                  setToast,
+                );
+              }}
+            >
+              Copy request
+            </span>
           </button>
         </div>
       ))}
+      {toast && (
+        <Toast
+          title={toast.title}
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
