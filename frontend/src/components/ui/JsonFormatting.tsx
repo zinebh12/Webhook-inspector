@@ -19,7 +19,7 @@ const JsonFormatting = ({
             <div key={key} className="flex gap-2 text-xs md:text-sm font-mono">
               <span className="text-pink-400">{`${key}:`}</span>
 
-              <span className="break-all text-white">{String(value)}</span>
+              <span className="break-all text-white">{`${value}`}</span>
             </div>
           ))}
         </div>
@@ -32,7 +32,13 @@ const JsonFormatting = ({
             <div key={key} className="flex gap-2 text-xs md:text-sm font-mono">
               <span className="text-pink-400">{`${key}:`}</span>
 
-              <span className="break-all text-white">{String(value)}</span>
+              {value !== null && typeof value === "object" ? (
+                <pre>{JSON.stringify(value, null, 2)}</pre>
+              ) : (
+                <span className="ml-2 break-all text-white">
+                  {value === null ? "null" : String(value)}
+                </span>
+              )}
             </div>
           ))}
         </div>
