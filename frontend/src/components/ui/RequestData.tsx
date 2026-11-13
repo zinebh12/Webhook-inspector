@@ -52,6 +52,11 @@ const RequestData = ({
       {showJson && (
         <>
           <JsonFormatting
+            id={request.id}
+            statusCode={request.statusCode.toString()}
+            ip={request.ip}
+            query={JSON.stringify(request.query)}
+            method={request.method}
             headerObject={JSON.parse(request.headers)}
             bodyObject={JSON.parse(request.body)}
           />

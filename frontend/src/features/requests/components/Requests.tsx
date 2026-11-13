@@ -15,21 +15,32 @@ const Requests = ({ id }: { id: string | null }) => {
 
   const requestsData = requests?.data.map((d) => ({
     id: d.id,
+    method: d.method,
+    statusCode: d.statusCode,
+    ip: d.ip,
+    query: d.query,
     headers: d.headers,
     body: d.body,
-    method: d.method,
     receivedAt: d.receivedAt,
   }));
 
   const allData = requests?.data.map((d) => d);
 
   return (
-    <div className="mx-4 space-y-4">
+    <div
+      className="mx-4 space-y-4"
+      onClick={() => {
+        console.log(requests?.data[0]);
+      }}
+    >
       {requestsData?.map((request) => (
         <RequestData
           key={request.id}
           request={{
             id: request.id,
+            statusCode: request.statusCode.toString(),
+            ip: request.ip,
+            query: JSON.stringify(request.query),
             headers: JSON.stringify(request.headers),
             body: JSON.stringify(request.body),
             method: request.method,
