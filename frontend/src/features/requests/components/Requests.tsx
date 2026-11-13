@@ -1,10 +1,13 @@
 import { useRequests } from "../hooks/use-requests.hook";
+import { useNewRequestSocket } from "../hooks/new-request-socket.hook";
 
 import { useState } from "react";
 import Toast, { ToastVariant } from "@/components/ui/Toast";
 import RequestData from "@/components/ui/RequestData";
 
 const Requests = ({ id }: { id: string | null }) => {
+  useNewRequestSocket(id);
+
   const { data: requests } = useRequests(id);
 
   const [toast, setToast] = useState<{
@@ -27,12 +30,7 @@ const Requests = ({ id }: { id: string | null }) => {
   const allData = requests?.data.map((d) => d);
 
   return (
-    <div
-      className="mx-4 space-y-4"
-      onClick={() => {
-        console.log(requests?.data[0]);
-      }}
-    >
+    <div className="mx-4 space-y-4">
       {requestsData?.map((request) => (
         <RequestData
           key={request.id}

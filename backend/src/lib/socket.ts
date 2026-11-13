@@ -4,7 +4,13 @@ import type { Server as HttpServer } from 'node:http';
 let io: Server | null = null;
 
 export const initSocket = (server: HttpServer): Server => {
-  io = new Server(server);
+  io = new Server(server, {
+    cors: {
+      origin: process.env.CLIENT_URL,
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
+  });
   // socket io check!
   io.on('connection', (socket) => {
     console.log(`Client connected: ${socket.id}`);

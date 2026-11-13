@@ -9,5 +9,9 @@ export const useRequests = (id: string | null) => {
     queryKey: ["endpoints", id, "requests"],
     queryFn: () => getRequests<WebhookRequests>(`/${id}/requests`),
     enabled: !!id,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
