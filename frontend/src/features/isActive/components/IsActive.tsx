@@ -22,13 +22,24 @@ const IsActive = ({ endpoint }: Partial<EndpointResponse> = {}) => {
   };
 
   return (
-    <div className="space-x-2">
+    <div
+      onClick={toggleActivity}
+      role="button"
+      tabIndex={0}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 
+    text-xs font-medium cursor-pointer transition-all duration-200
+    ${
+      endpoint?.isActive
+        ? "border-status-success/30 bg-status-success/10 text-status-success hover:bg-status-success/15"
+        : "border-status-error/30 bg-status-error/10 text-status-error hover:bg-status-error/15"
+    }`}
+    >
       <span
-        className={`inline-block w-2 h-2 rounded-full ${endpoint?.isActive ? " bg-green-500" : "bg-red-500"}`}
+        className={`h-1.5 w-1.5 rounded-full ${
+          endpoint?.isActive ? "bg-status-success" : "bg-status-error"
+        }`}
       />
-      <span className="text-xs cursor-pointer text-text-primary" onClick={toggleActivity}>
-        {endpoint?.isActive ? "Live" : "Off"}
-      </span>
+      {endpoint?.isActive ? "Live" : "Disabled"}
     </div>
   );
 };

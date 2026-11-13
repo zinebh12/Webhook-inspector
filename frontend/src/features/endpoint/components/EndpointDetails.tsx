@@ -22,7 +22,7 @@ const EndpointDetails = ({
   } | null>();
 
   return (
-    <div className="flex items-end justify-between bg-card-background w-full py-2 px-4 space-y-2 border-b border-border-default">
+    <div className="flex items-center justify-between bg-card-background w-full py-2 px-4 space-y-2 border-b border-border-default">
     <div>
         <div className="flex items-center justify-between w-full">
         <h2 className="capitalize text-text-primary text-xl font-semibold">
@@ -74,7 +74,7 @@ const EndpointDetails = ({
         )}
       </div>
     </div>
-        <div className="space-y-3">
+        <div className="space-y-3 text-end">
           <IsActive endpoint={endpoint?.endpoint} />
           <DeleteBtn id={endpoint?.endpoint.id} />
         </div>
