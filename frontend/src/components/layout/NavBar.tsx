@@ -3,6 +3,7 @@
 import LogoutButton from "@/features/auth/components/LogoutButton";
 import Image from "next/image";
 import Logo from "./../../../public/logo.svg";
+import SocketStatus from "@/features/socketStatus/components/SocketStatus";
 export function Navbar() {
   return (
     <nav className="flex items-center justify-between p-2 border-b bg-sidebar-background border-border-default">
@@ -15,7 +16,10 @@ export function Navbar() {
           </p>
         </div>
       </div>
-      <LogoutButton />
+      <div className="flex gap-2">
+        <SocketStatus />
+        <LogoutButton />
+      </div>
     </nav>
   );
 }

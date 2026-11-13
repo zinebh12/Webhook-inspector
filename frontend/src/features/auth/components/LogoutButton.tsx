@@ -27,7 +27,6 @@ const LogoutButton = () => {
         icon={faRightFromBracket}
         className="text-sm sm:text-sm"
       />
-      <span className="hidden sm:inline"> Logout </span>
     </button>
   );
 };

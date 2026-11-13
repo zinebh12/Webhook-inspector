@@ -39,7 +39,7 @@ const IsActive = ({ endpoint }: Partial<EndpointResponse> = {}) => {
           endpoint?.isActive ? "bg-status-success" : "bg-status-error"
         }`}
       />
-      {endpoint?.isActive ? "Live" : "Disabled"}
+      {endpoint?.isActive ? "Active" : "Disabled"}
     </div>
   );
 };
