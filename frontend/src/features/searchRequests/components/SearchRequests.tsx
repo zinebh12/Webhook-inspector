@@ -1,26 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-import { useSearch } from "../hooks/use-search.hook";
-
-import { useSearchParams } from "next/navigation";
+import { UseSearchContext } from "@/lib/search.context";
 
 const SearchRequests = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("endpoint");
-
-  const [search, setSearch] = useState("");
-
-  const { data: requests } = useSearch(id, search);
+  const { search, setSearch } = UseSearchContext();
 
   const handleChange = (searchTerm: string) => {
     setSearch(searchTerm);
   };
 
-  useEffect(() => {
-    console.log(requests?.data);
-  }, [requests]);
   return (
     <>
       <div className="relative">

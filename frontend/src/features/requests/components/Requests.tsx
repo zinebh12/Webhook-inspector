@@ -4,11 +4,14 @@ import { useNewRequestSocket } from "../hooks/new-request-socket.hook";
 import { useState } from "react";
 import Toast, { ToastVariant } from "@/components/ui/Toast";
 import RequestData from "@/components/ui/RequestData";
+import { UseSearchContext } from "@/lib/search.context";
 
 const Requests = ({ id }: { id: string | null }) => {
   useNewRequestSocket(id);
 
-  const { data: requests } = useRequests(id);
+  const { search } = UseSearchContext();
+
+  const { data: requests } = useRequests(id, search);
 
   const [toast, setToast] = useState<{
     title: string;
