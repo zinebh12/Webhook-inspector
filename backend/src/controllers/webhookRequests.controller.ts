@@ -59,7 +59,7 @@ export const getRequests = async (req: authRequest, res: Response) => {
         error: 'Invalid endpoint ID',
       });
     }
-    const { method, search, page, limit, from, to } = validatedQuery.data;
+    const { search, page, limit } = validatedQuery.data;
 
     if (!userId) {
       return res.status(401).json({ error: 'Not authenticated' });
@@ -76,56 +76,30 @@ export const getRequests = async (req: authRequest, res: Response) => {
 
     const offset = (page - 1) * limit;
 
-    const whereConditions: {
-      endpointId: string;
-      method?: string;
-      receivedAt?: { gte?: Date; lte?: Date };
-    } = {
-      endpointId: endpoint.id,
-    };
-
-    if (typeof method === 'string' && method.length > 0) {
-      whereConditions.method = method;
-    }
-
-    const receivedAt: { gte?: Date; lte?: Date } = {};
-
-    if (from) {
-      receivedAt.gte = from;
-    }
-
-    if (to) {
-      receivedAt.lte = to;
-    }
-
-    if (Object.keys(receivedAt).length > 0) {
-      whereConditions.receivedAt = receivedAt;
-    }
-
     const hasSearch = typeof search === 'string' && search.length > 0;
 
     let endpointRequests;
     let total: number;
 
     if (hasSearch) {
-      const allMatches = await db.orm.public.WebhookRequest.where(whereConditions)
+      const allMatches = await db.orm.public.WebhookRequest.where({ endpointId: endpoint.id })
         .orderBy((r) => r.receivedAt.desc())
         .all();
 
       const filtered = allMatches.filter((r) =>
-        JSON.stringify(r.body).toLowerCase().includes(search.toLowerCase()),
+        JSON.stringify(r).toLowerCase().includes(search.toLowerCase()),
       );
 
       total = filtered.length;
       endpointRequests = filtered.slice(offset, offset + limit);
     } else {
-      endpointRequests = await db.orm.public.WebhookRequest.where(whereConditions)
+      endpointRequests = await db.orm.public.WebhookRequest.where({ endpointId: endpoint.id })
         .orderBy((r) => r.receivedAt.desc())
         .limit(limit)
         .offset(offset)
         .all();
 
-      total = (await db.orm.public.WebhookRequest.where(whereConditions).all()).length;
+      total = (await db.orm.public.WebhookRequest.where({ endpointId: endpoint.id }).all()).length;
     }
 
     const totalPages = Math.ceil(total / limit);
@@ -138,7 +112,7 @@ export const getRequests = async (req: authRequest, res: Response) => {
       totalPages,
     });
   } catch (error) {
-      console.error(error);
+    console.error(error);
     return res.status(500).json({ error: 'Error getting requests' });
   }
 };
