@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/"];
 const authRoutes = ["/login", "/register"];
 
 export default async function proxy(request: NextRequest) {
@@ -31,5 +31,5 @@ export default async function proxy(request: NextRequest) {
 
 // Routes Proxy should not run on
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/" ,"/dashboard/:path*", "/login", "/register"],
 };
