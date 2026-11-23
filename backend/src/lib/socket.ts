@@ -6,7 +6,7 @@ let io: Server | null = null;
 export const initSocket = (server: HttpServer): Server => {
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: process.env.APP_URL,
       methods: ['GET', 'POST'],
       credentials: true,
     },
