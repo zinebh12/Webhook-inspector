@@ -1,10 +1,11 @@
 import { useRequests } from "../hooks/use-requests.hook";
 import { useNewRequestSocket } from "../hooks/new-request-socket.hook";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Toast, { ToastVariant } from "@/components/ui/Toast";
 import RequestData from "@/components/ui/RequestData";
 import { UseSearchContext } from "@/lib/search.context";
+import Pagination from "@/features/pagination/components/Pagination";
 
 const Requests = ({ id }: { id: string | null }) => {
   useNewRequestSocket(id);
@@ -32,6 +33,10 @@ const Requests = ({ id }: { id: string | null }) => {
 
   const allData = requests?.data.map((d) => d);
 
+  useEffect(() => {
+    console.log(requests);
+  }, [requests]);
+
   return (
     <div className="mx-4 space-y-4">
       {requestsData?.map((request) => (
@@ -51,6 +56,7 @@ const Requests = ({ id }: { id: string | null }) => {
           setToast={setToast}
         />
       ))}
+      <Pagination requests={requests} />
       {toast && (
         <Toast
           title={toast.title}

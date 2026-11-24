@@ -28,4 +28,8 @@ export interface WebhookRequestHeaders {
 
 export interface WebhookRequests {
   data: WebhookRequest[];
+  total: number;
+  limit: number;
+  page: number;
+  totalPages: number;
 }
