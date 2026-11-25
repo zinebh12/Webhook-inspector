@@ -7,7 +7,7 @@ import { WebhookRequests } from "@/types/requests.types";
 import { useEffect, useState } from "react";
 
 const Pagination = ({ requests }: { requests: WebhookRequests }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(requests?.page);
   const [enableLeftBtn, setEnableLeftBtn] = useState<boolean>(false);
   const [enableRightBtn, setEnableRightBtn] = useState<boolean>(false);
 
@@ -28,7 +28,7 @@ const Pagination = ({ requests }: { requests: WebhookRequests }) => {
     } else {
       setEnableRightBtn(false);
     }
-  }, [currentPage, enableLeftBtn, enableRightBtn, totalPagesArray]);
+  }, [currentPage, enableLeftBtn, enableRightBtn, totalPagesArray, requests]);
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-white/10 py-4">
@@ -41,7 +41,6 @@ const Pagination = ({ requests }: { requests: WebhookRequests }) => {
         <button
           disabled={enableLeftBtn}
           onClick={() => {
-            console.log("clicked");
             if (currentPage > 1) {
               setCurrentPage(currentPage - 1);
             } else return;
