@@ -4,48 +4,35 @@ import {
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { WebhookRequests } from "@/types/requests.types";
-import { useEffect, useState } from "react";
 
-const Pagination = ({ requests }: { requests: WebhookRequests }) => {
-  const [currentPage, setCurrentPage] = useState(requests?.page);
-  const [enableLeftBtn, setEnableLeftBtn] = useState<boolean>(false);
-  const [enableRightBtn, setEnableRightBtn] = useState<boolean>(false);
-
+const Pagination = ({
+  requests,
+  currentPage,
+  setCurrentPage,
+  onPageChange,
+}: {
+  requests?: WebhookRequests;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  onPageChange: (page: number) => void;
+}) => {
   const totalPagesArray = Array.from(
-    { length: requests?.totalPages },
+    { length: requests?.totalPages ?? 0 },
     (_, i) => i + 1,
   );
-
-  useEffect(() => {
-    if (totalPagesArray.at(0) === currentPage) {
-      setEnableLeftBtn(true);
-    } else {
-      setEnableLeftBtn(false);
-    }
-
-    if (totalPagesArray.at(-1) === currentPage) {
-      setEnableRightBtn(true);
-    } else {
-      setEnableRightBtn(false);
-    }
-  }, [currentPage, enableLeftBtn, enableRightBtn, totalPagesArray, requests]);
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-white/10 py-4">
       <p className="text-xs text-muted-foreground">
-        Showing <span className="text-foreground">{requests?.limit}</span> of{" "}
-        <span className="text-foreground">{requests?.total}</span> requests
+        Showing <span className="text-foreground">{requests?.data.length}</span>{" "}
+        of <span className="text-foreground">{requests?.total}</span> requests
       </p>
 
       <div className="flex items-center gap-1">
         <button
-          disabled={enableLeftBtn}
-          onClick={() => {
-            if (currentPage > 1) {
-              setCurrentPage(currentPage - 1);
-            } else return;
-          }}
-          className={`cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-muted-foreground ${enableLeftBtn ? "opacity-40" : "opacity-100"} `}
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+          className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-muted-foreground disabled:opacity-40"
         >
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
@@ -53,7 +40,7 @@ const Pagination = ({ requests }: { requests: WebhookRequests }) => {
           <button
             key={number}
             onClick={() => setCurrentPage(number)}
-            className={`h-8 w-8 rounded-md text-sm text-muted-foreground ${number === currentPage && "bg-text-pinkest hover:bg-text-pinkest"} `}
+            className={`cursor-pointer focus:outline-none h-8 w-8 rounded-md text-sm text-muted-foreground ${number === currentPage && "bg-text-pinkest hover:bg-text-pinkest"} `}
           >
             {number}
           </button>
@@ -69,12 +56,9 @@ const Pagination = ({ requests }: { requests: WebhookRequests }) => {
           </>
         )}
         <button
-          disabled={enableRightBtn}
-          onClick={() => {
-            setCurrentPage(currentPage + 1);
-            if (totalPagesArray.at(-1) === currentPage) return;
-          }}
-          className={`cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-muted-foreground ${enableRightBtn ? "opacity-40" : "opacity-100"} `}
+          disabled={currentPage === requests?.totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+          className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-muted-foreground disabled:opacity-40"
         >
           <FontAwesomeIcon icon={faChevronRight} />
         </button>
